@@ -175,6 +175,34 @@
         });
     }
 </script>
+<script>
+  // 1. تسجيل المحرك المسؤول عن التنبيهات (Service Worker)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('sw.js').then(function(registration) {
+        console.log('تم تسجيل الـ ServiceWorker بنجاح');
+      }).catch(function(err) {
+        console.log('فشل تسجيل الـ ServiceWorker:', err);
+      });
+    });
+  }
+
+  // 2. وظيفة طلب الإذن من المستخدم لتفعيل التنبيهات
+  function askPermission() {
+    if (!("Notification" in window)) {
+      alert("متصفحك لا يدعم التنبيهات");
+      return;
+    }
+    
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        alert("تم تفعيل التنبيهات بنجاح! ستصلك رسالة تذكير.");
+      } else {
+        alert("يرجى السماح بالإشعارات من إعدادات المتصفح لتصلك الأذكار.");
+      }
+    });
+  }
+</script>
 </body>
 </html>
  
