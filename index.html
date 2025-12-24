@@ -1,69 +1,87 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موقع الأذكار</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Cairo', sans-serif;
-            background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+<meta charset="UTF-8">
+<title>Dhikr Categories</title>
 
-        .main-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px); /* تأثير الزجاج */
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 50px;
-            border-radius: 30px;
-            text-align: center;
-            color: white;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            max-width: 500px;
-            width: 90%;
-        }
+<style>
+body {
+    font-family: Tahoma, Arial;
+    background: #f4f6f8;
+    margin: 0;
+    direction: rtl;
+}
 
-        h1 { font-size: 2.5rem; margin-bottom: 30px; text-shadow: 2px 2px 10px rgba(0,0,0,0.3); }
+header {
+    background: #1f7a8c;
+    color: white;
+    text-align: center;
+    padding: 25px;
+}
 
-        .btn-group { display: flex; flex-direction: column; gap: 15px; }
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 15px;
+}
 
-        .btn {
-            background: #27ae60;
-            color: white;
-            text-decoration: none;
-            padding: 15px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            transition: 0.3s;
-        }
+.category {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
-        .btn:hover {
-            background: #2ecc71;
-            transform: scale(1.05);
-        }
+.category:hover {
+    background: #e6f4f1;
+}
 
-        .btn-secondary {
-            background: rgba(255,255,255,0.2);
-        }
-    </style>
+#dhikrContent {
+    margin-top: 30px;
+}
+</style>
 </head>
+
 <body>
 
-    <div class="main-container">
-        <h1>✨ أذكار المسلم</h1>
-        <div class="btn-group">
-            <a href="Dhikr.html" class="btn">ابدأ القراءة والمراجع</a>
-            <a href="README.html" class="btn btn-secondary">عن الموقع</a>
-        </div>
-    </div>
+<header>
+    <h1>تصنيفات الأذكار</h1>
+    <p>اختر الذكر المناسب لحالتك</p>
+</header>
+
+<div class="container">
+
+    <div class="category" onclick="loadDhikr('morning')">🌅 أذكار الصباح</div>
+    <div class="category" onclick="loadDhikr('evening')">🌙 أذكار المساء</div>
+    <div class="category" onclick="loadDhikr('gratitude')">🤍 أذكار الشكر</div>
+    <div class="category" onclick="loadDhikr('travel')">✈️ أذكار السفر</div>
+    <div class="category" onclick="loadDhikr('home')">🏠 الدخول والخروج من المنزل</div>
+    <div class="category" onclick="loadDhikr('bathroom')">🚿 دخول وخروج الحمام</div>
+    <div class="category" onclick="loadDhikr('sadness')">😔 أذكار الحزن</div>
+    <div class="category" onclick="loadDhikr('repentance')">🕊️ التوبة والاستغفار</div>
+
+    <!-- إضافات -->
+    <div class="category" onclick="loadDhikr('fear')">⚠️ أذكار الخوف</div>
+    <div class="category" onclick="loadDhikr('sleep')">🛌 أذكار النوم</div>
+    <div class="category" onclick="loadDhikr('waking')">☀️ أذكار الاستيقاظ</div>
+
+    <div id="dhikrContent"></div>
+</div>
+
+<script>
+function loadDhikr(section) {
+    fetch("Dhikr.html")
+        .then(res => res.text())
+        .then(data => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, "text/html");
+            const content = doc.getElementById(section);
+            document.getElementById("dhikrContent").innerHTML = content.innerHTML;
+        });
+}
+</script>
 
 </body>
 </html>
