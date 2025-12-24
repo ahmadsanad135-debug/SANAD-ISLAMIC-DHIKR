@@ -3,29 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موقع الأذكار الرئيسي</title>
+    <title>موقع الأذكار</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            margin: 0; font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070');
-            background-size: cover; height: 100vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .nav-box { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px); /* تأثير الزجاج */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 30px; text-shadow: 2px 2px 10px rgba(0,0,0,0.3); }
+
+        .btn-group { display: flex; flex-direction: column; gap: 15px; }
+
         .btn {
-            padding: 20px 40px; background: rgba(255,255,255,0.1);
-            border: 2px solid #27ae60; border-radius: 15px;
-            color: white; text-decoration: none; font-size: 1.5rem;
-            transition: 0.3s; backdrop-filter: blur(5px);
+            background: #27ae60;
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: 0.3s;
         }
-        .btn:hover { background: #27ae60; transform: translateY(-5px); }
+
+        .btn:hover {
+            background: #2ecc71;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+        }
     </style>
 </head>
 <body>
-    <h1>مرحباً بك في موقع الأذكار</h1>
-    <div class="nav-box">
-        <a href="README.html" class="btn">عن الموقع ℹ️</a>
-        <a href="Dhikr.html" class="btn">الموسوعة والمراجع 📚</a>
+
+    <div class="main-container">
+        <h1>✨ أذكار المسلم</h1>
+        <div class="btn-group">
+            <a href="Dhikr.html" class="btn">ابدأ القراءة والمراجع</a>
+            <a href="README.html" class="btn btn-secondary">عن الموقع</a>
+        </div>
     </div>
+
 </body>
 </html>
