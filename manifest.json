@@ -1,23 +1,23 @@
 {
-  "name": "موسوعة حصن المسلم الشاملة",
-  "short_name": "الأذكار",
-  "description": "موسوعة شاملة تحتوي على أكثر من 400 ذكر ودعاء مع عداد ذكي",
-  "start_url": "index.html",
+  "name": "سند المسلم - أذكار",
+  "short_name": "سند",
+  "description": "موسوعة حصن المسلم الشاملة مع عداد إلكتروني",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f0f2f5",
-  "theme_color": "#27ae60",
+  "background_color": "#f8f9fa",
+  "theme_color": "#1b5e20",
   "orientation": "portrait",
   "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2805/2805355.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2805/2805355.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    },
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/2805/2805355.png",
-      "sizes": "192x192",
-      "type": "image/png"
     }
   ]
 }
