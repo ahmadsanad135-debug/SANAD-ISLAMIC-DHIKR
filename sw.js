@@ -1,28 +1,64 @@
-// 1. تعريف وتثبيت المحرك (Service Worker)
+const CACHE_NAME = 'sanad-islamic-v2';
+const assets = [
+  '/',
+  '/index.html',
+  '/dhikr-data.js',
+  '/manifest.json',
+  'https://cdn-icons-png.flaticon.com/512/2805/2805355.png'
+];
+
+// 1. تثبيت الخدمة وحفظ الملفات في الكاش
 self.addEventListener('install', (event) => {
-    console.log('Service Worker: Installed');
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('تم حفظ الملفات في الكاش بنجاح');
+      return cache.addAll(assets);
+    })
+  );
 });
 
+// 2. تفعيل الخدمة وتنظيف الكاش القديم
 self.addEventListener('activate', (event) => {
-    console.log('Service Worker: Activated');
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
+      );
+    })
+  );
 });
 
-// 2. استقبال التنبيهات (الكود الذي سألت عنه)
+// 3. استراتيجية "الكاش أولاً" لضمان العمل بدون إنترنت
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});
+
+// 4. استقبال التنبيهات (Push Notifications)
 self.addEventListener('push', function(event) {
-    const options = {
-        body: 'حان الآن موعد الأذكار، نور قلبك بذكر الله.',
-        icon: 'https://cdn-icons-png.flaticon.com/512/2805/2805355.png',
-        badge: 'https://cdn-icons-png.flaticon.com/512/2805/2805355.png'
-    };
-    event.waitUntil(
-        self.registration.showNotification('✨ ذكر الله', options)
-    );
+  const options = {
+    body: 'نور قلبك بذكر الله.. حان الآن موعد الأذكار.',
+    icon: 'https://cdn-icons-png.flaticon.com/512/2805/2805355.png',
+    badge: 'https://cdn-icons-png.flaticon.com/512/2805/2805355.png',
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: '1'
+    }
+  };
+  event.waitUntil(
+    self.registration.showNotification('✨ ذكر الله', options)
+  );
 });
 
-// 3. ماذا يحدث عند الضغط على التنبيه
+// 5. ماذا يحدث عند الضغط على التنبيه
 self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-    event.waitUntil(
-        clients.openWindow('/') // يفتح موقعك فوراً عند الضغط على التذكير
-    );
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow('/') 
+  );
 });
