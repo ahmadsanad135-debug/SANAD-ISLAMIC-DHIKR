@@ -3,231 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أذكار المسلم - القائمة الرئيسية</title>
-    <link rel="manifest" href="manifest.json">
+    <title>أذكار المسلم</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --main-green: #1b5e20;
+            --primary: #1b5e20;
             --bg: #f8f9fa;
             --white: #ffffff;
-            --text: #2c3e50;
         }
         body {
             font-family: 'Tajawal', sans-serif;
             background-color: var(--bg);
             margin: 0; padding: 0;
-            color: var(--text);
+            color: #333;
         }
         header {
-            background: var(--main-green);
-            color: white; padding: 30px 0;
+            background: var(--primary);
+            color: white; padding: 40px 20px;
             text-align: center;
-            border-radius: 0 0 25px 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 20px;
         }
-        .container { padding: 20px; max-width: 700px; margin: auto; }
-        
-        /* تصميم المربعات في القائمة الرئيسية */
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+
+        /* الصفحة الأولى: قائمة المربعات */
         .grid-menu {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-top: 10px;
         }
-        .cat-item {
+        .cat-card {
             background: var(--white);
-            padding: 35px 15px;
+            padding: 30px 10px;
             border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            border: 1px solid #eee;
-            transition: transform 0.2s, background 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100px;
-        }
-        .cat-item:active { transform: scale(0.95); background: #f0f0f0; }
-
-        /* واجهة الأذكار (مخفية بالبداية) */
-        #dhikrView { display: none; }
-        .back-btn {
-            background: var(--white);
-            border: 1px solid var(--main-green);
-            color: var(--main-green);
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .dhikr-card {
-            background: var(--white);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
             text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #eee;
+            transition: 0.2s;
+        }
+        .cat-card:active { transform: scale(0.95); background: #f0f0f0; }
+
+        /* الصفحة الثانية: عرض الأذكار (مخفية في البداية) */
+        #dhikrPage { display: none; }
+        .back-btn {
+            background: white; border: 1px solid var(--primary);
+            color: var(--primary); padding: 10px 20px;
+            border-radius: 10px; cursor: pointer;
+            margin-bottom: 20px; font-weight: bold; width: 100%;
+        }
+        .dhikr-item {
+            background: var(--white); border-radius: 15px;
+            padding: 25px; margin-bottom: 15px;
+            text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border: 1px solid #eee;
         }
-        .dhikr-text { font-size: 1.25rem; line-height: 1.8; margin-bottom: 25px; }
+        .dhikr-text { font-size: 1.2rem; line-height: 1.8; margin-bottom: 20px; }
         
-        /* زر العداد التنازلي */
+        /* زر العداد */
         .counter-btn {
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            border: 4px solid var(--main-green);
-            background: white;
-            font-size: 1.5rem; font-weight: bold;
-            color: var(--main-green);
+            width: 70px; height: 70px; border-radius: 50%;
+            border: 3px solid var(--primary); background: white;
+            font-size: 1.4rem; font-weight: bold; color: var(--primary);
             cursor: pointer;
-            transition: 0.2s;
-            -webkit-tap-highlight-color: transparent;
         }
-        .counter-btn.done { background: var(--main-green); color: white; }
-
-        .search-container { margin-bottom: 20px; }
-        input[type="text"] {
-            width: 100%; padding: 12px; border-radius: 10px;
-            border: 1px solid #ccc; outline: none; box-sizing: border-box;
-        }
+        .counter-btn.done { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
 
-<div id="mainMenu">
+<div id="homePage">
     <header>
-        <h1>أذكار المسلم</h1>
-        <p>القائمة الرئيسية للأذكار</p>
+        <h1 style="margin:0">سند المسلم</h1>
+        <p style="margin:10px 0 0; opacity:0.8">اختر التصنيف لعرض الأذكار</p>
     </header>
     <div class="container">
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="ابحث في الأذكار..." oninput="searchDhikr()">
-        </div>
-        <div class="grid-menu" id="menuGrid">
-            </div>
+        <div class="grid-menu" id="menuGrid"></div>
     </div>
 </div>
 
-<div id="dhikrView">
+<div id="dhikrPage">
     <header>
-        <h1 id="catTitle">الأذكار</h1>
+        <h1 id="pageTitle" style="margin:0">الأذكار</h1>
     </header>
     <div class="container">
-        <button class="back-btn" onclick="goBack()">العودة للقائمة</button>
-        <div id="dhikrList"></div>
+        <button class="back-btn" onclick="showHome()">العودة للقائمة الرئيسية</button>
+        <div id="dhikrContainer"></div>
     </div>
 </div>
 
 <script src="dhikr-data.js"></script>
 <script>
     const menuGrid = document.getElementById('menuGrid');
-    const mainMenu = document.getElementById('mainMenu');
-    const dhikrView = document.getElementById('dhikrView');
-    const dhikrList = document.getElementById('dhikrList');
-    const catTitle = document.getElementById('catTitle');
+    const homePage = document.getElementById('homePage');
+    const dhikrPage = document.getElementById('dhikrPage');
+    const dhikrContainer = document.getElementById('dhikrContainer');
+    const pageTitle = document.getElementById('pageTitle');
 
-    // 1. إنشاء المربعات بناءً على ملف dhikr-data.js
+    // 1. عرض القائمة الرئيسية فور التحميل
     function init() {
+        if (typeof dhikrData === 'undefined') {
+            menuGrid.innerHTML = "<p style='text-align:center; grid-column: 1/3;'>خطأ: لم يتم العثور على ملف البيانات dhikr-data.js</p>";
+            return;
+        }
+        
         Object.keys(dhikrData).forEach(cat => {
-            const div = document.createElement('div');
-            div.className = 'cat-item';
-            div.innerText = cat;
-            div.onclick = () => openCategory(cat);
-            menuGrid.appendChild(div);
+            const card = document.createElement('div');
+            card.className = 'cat-card';
+            card.innerText = cat;
+            card.onclick = () => showDhikrs(cat);
+            menuGrid.appendChild(card);
         });
     }
 
-    // 2. فتح قسم معين وعرض الأذكار
-    function openCategory(name) {
-        mainMenu.style.display = 'none';
-        dhikrView.style.display = 'block';
-        catTitle.innerText = name;
-        dhikrList.innerHTML = '';
+    // 2. الانتقال لصفحة الأذكار
+    function showDhikrs(category) {
+        homePage.style.display = 'none';
+        dhikrPage.style.display = 'block';
+        pageTitle.innerText = category;
+        dhikrContainer.innerHTML = '';
         window.scrollTo(0,0);
 
-        dhikrData[name].forEach((text, i) => {
-            createDhikrCard(text, i);
-        });
-    }
+        dhikrData[category].forEach((text, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'dhikr-item';
+            
+            // تحديد العداد تلقائياً
+            let target = 1;
+            if (text.includes('3 مرات')) target = 3;
+            else if (text.includes('7 مرات')) target = 7;
+            else if (text.includes('33 مرة')) target = 33;
+            else if (text.includes('100 مرة')) target = 100;
 
-    // 3. إنشاء بطاقة الذكر مع العداد
-    function createDhikrCard(text, i) {
-        const card = document.createElement('div');
-        card.className = 'dhikr-card';
-        
-        // تحديد عدد المرات المطلوبة من النص تلقائياً
-        let target = 1;
-        if (text.includes('(3 مرات)')) target = 3;
-        else if (text.includes('(7 مرات)')) target = 7;
-        else if (text.includes('(33 مرة)')) target = 33;
-        else if (text.includes('(34 مرة)')) target = 34;
-        else if (text.includes('(100 مرة)')) target = 100;
+            let count = 0;
 
-        let current = 0;
+            itemDiv.innerHTML = `
+                <div class="dhikr-text">${text}</div>
+                <button class="counter-btn" id="btn-${index}">${target}</button>
+            `;
 
-        card.innerHTML = `
-            <div class="dhikr-text">${text}</div>
-            <button class="counter-btn" id="btn-${i}">${target}</button>
-        `;
-
-        const btn = card.querySelector(`#btn-${i}`);
-        btn.onclick = () => {
-            if (current < target) {
-                current++;
-                btn.innerText = target - current;
-                if (navigator.vibrate) navigator.vibrate(40);
-                if (current === target) {
-                    btn.innerText = "تم";
-                    btn.classList.add('done');
-                    card.style.opacity = "0.7";
+            const btn = itemDiv.querySelector('button');
+            btn.onclick = () => {
+                if (count < target) {
+                    count++;
+                    btn.innerText = target - count;
+                    if (navigator.vibrate) navigator.vibrate(40);
+                    if (count === target) {
+                        btn.innerText = "تم";
+                        btn.classList.add('done');
+                    }
                 }
-            }
-        };
-        dhikrList.appendChild(card);
-    }
-
-    // 4. وظيفة البحث
-    function searchDhikr() {
-        const term = document.getElementById('searchInput').value.trim();
-        if (!term) return;
-        
-        mainMenu.style.display = 'none';
-        dhikrView.style.display = 'block';
-        catTitle.innerText = "نتائج البحث";
-        dhikrList.innerHTML = '';
-
-        let found = false;
-        Object.values(dhikrData).flat().forEach((text, i) => {
-            if (text.includes(term)) {
-                createDhikrCard(text, i);
-                found = true;
-            }
+            };
+            dhikrContainer.appendChild(itemDiv);
         });
-        if (!found) dhikrList.innerHTML = '<p style="text-align:center">لا توجد نتائج مطابقة</p>';
     }
 
-    function goBack() {
-        mainMenu.style.display = 'block';
-        dhikrView.style.display = 'none';
-        document.getElementById('searchInput').value = '';
-    }
-
-    // تسجيل Service Worker للعمل بدون إنترنت
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
-        });
+    // 3. العودة للقائمة
+    function showHome() {
+        homePage.style.display = 'block';
+        dhikrPage.style.display = 'none';
     }
 
     window.onload = init;
 </script>
 </body>
 </html>
+ 
