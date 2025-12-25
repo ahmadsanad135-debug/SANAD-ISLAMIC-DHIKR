@@ -1,228 +1,183 @@
-<!DOCTYPE html>
+     <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موسوعة الأذكار الشاملة</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#27ae60">
+    <title> أذكار المسلم </title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f0f2f5;
-            --card: #ffffff;
-            --primary: #27ae60;
+            --main-green: #1b5e20;
+            --bg: #f8f9fa;
+            --white: #ffffff;
             --text: #2c3e50;
-            --shadow: rgba(0,0,0,0.1);
-        }
-        [data-theme="dark"] {
-            --bg: #121212;
-            --card: #1e1e1e;
-            --primary: #2ecc71;
-            --text: #e0e0e0;
-            --shadow: rgba(0,0,0,0.5);
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Tajawal', sans-serif;
             background-color: var(--bg);
+            margin: 0; padding: 0;
             color: var(--text);
-            margin: 0;
-            padding-bottom: 50px;
-            transition: 0.3s;
         }
         header {
-            background: var(--primary);
-            color: white;
-            padding: 20px;
+            background: var(--main-green);
+            color: white; padding: 25px 0;
             text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px var(--shadow);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .search-box {
-            padding: 10px 20px;
-            max-width: 500px;
-            margin: -25px auto 20px;
-            position: relative;
-            z-index: 1001;
+        .container { padding: 20px; max-width: 700px; margin: auto; }
+        
+        /* القائمة الرئيسية */
+        .grid-menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
-        #searchInput {
-            width: 100%;
-            padding: 12px 20px;
-            border-radius: 25px;
-            border: none;
-            box-shadow: 0 4px 15px var(--shadow);
-            outline: none;
-            font-size: 16px;
-        }
-        .categories {
-            display: flex;
-            overflow-x: auto;
-            gap: 10px;
-            padding: 15px;
-            scrollbar-width: none;
-        }
-        .categories::-webkit-scrollbar { display: none; }
-        .cat-btn {
-            background: var(--card);
-            border: 1px solid var(--primary);
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            white-space: nowrap;
-            color: var(--text);
+        .cat-item {
+            background: var(--white);
+            padding: 25px 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             font-weight: bold;
-            transition: 0.3s;
-        }
-        .cat-btn.active { background: var(--primary); color: white; }
-        
-        .container { max-width: 600px; margin: auto; padding: 10px; }
-        
-        .dhikr-card {
-            background: var(--card);
-            margin-bottom: 15px;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px var(--shadow);
-            position: relative;
             cursor: pointer;
-            transition: transform 0.1s;
-            border-right: 6px solid var(--primary);
-            overflow: hidden;
+            border: 1px solid #ddd;
+            transition: 0.2s;
         }
-        .dhikr-card:active { transform: scale(0.97); }
-        .dhikr-text { font-size: 1.2rem; line-height: 1.6; margin-bottom: 40px; }
-        
-        .counter-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+        .cat-item:active { background-color: #f0f0f0; transform: scale(0.98); }
+
+        /* واجهة الأذكار */
+        #dhikrView { display: none; }
+        .back-btn {
+            background-color: var(--white);
+            border: 1px solid var(--main-green);
+            color: var(--main-green);
             padding: 10px 20px;
-            background: rgba(0,0,0,0.03);
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 14px;
         }
-        .count-num { font-weight: bold; color: var(--primary); }
-        
-        .progress-bar {
-            position: absolute; bottom: 0; left: 0; height: 4px;
-            background: var(--primary); width: 0%; transition: 0.3s;
+        .dhikr-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
         }
-        .done { opacity: 0.6; background: #eee; border-right-color: #95a5a6; }
-        
-        .theme-toggle {
-            position: fixed; left: 20px; bottom: 20px;
-            background: var(--primary); color: white;
-            border: none; border-radius: 50%; width: 50px; height: 50px;
-            cursor: pointer; box-shadow: 0 4px 10px var(--shadow);
-            font-size: 20px;
+        .dhikr-text {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .counter-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--main-green);
+            background: white;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--main-green);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .counter-btn.done {
+            background: var(--main-green);
+            color: white;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>✨ حصن المسلم الشامل</h1>
-    <p>أكثر من 400 ذكر ودعاء</p>
-</header>
-
-<div class="search-box">
-    <input type="text" id="searchInput" placeholder="ابحث عن ذكر معين..." oninput="searchDhikr()">
+<div id="mainMenu">
+    <header>
+        <h1>أذكر المسلم</h1>
+        <p>القائمة الرئيسية للأذكار</p>
+    </header>
+    <div class="container">
+        <div class="grid-menu" id="menuGrid"></div>
+    </div>
 </div>
 
-<div class="categories" id="catBox"></div>
-
-<div class="container" id="mainContainer"></div>
-
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<div id="dhikrView">
+    <header>
+        <h1 id="catTitle">الأذكار</h1>
+    </header>
+    <div class="container">
+        <button class="back-btn" onclick="goBack()">العودة للقائمة</button>
+        <div id="dhikrList"></div>
+    </div>
+</div>
 
 <script src="dhikr-data.js"></script>
 <script>
-    const container = document.getElementById('mainContainer');
-    const catBox = document.getElementById('catBox');
-    let activeCategory = "";
+    const menuGrid = document.getElementById('menuGrid');
+    const mainMenu = document.getElementById('mainMenu');
+    const dhikrView = document.getElementById('dhikrView');
+    const dhikrList = document.getElementById('dhikrList');
+    const catTitle = document.getElementById('catTitle');
 
-    // إنشاء أزرار التصنيفات تلقائياً
+    // بناء القائمة الرئيسية عند التحميل
     function init() {
-        Object.keys(dhikrData).forEach((cat, index) => {
-            const btn = document.createElement('button');
-            btn.className = 'cat-btn';
-            btn.innerText = cat;
-            btn.onclick = () => {
-                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                activeCategory = cat;
-                renderDhikr(cat);
-            };
-            catBox.appendChild(btn);
-            if(index === 0) btn.click();
-        });
-    }
-
-    function renderDhikr(category) {
-        container.innerHTML = "";
-        dhikrData[category].forEach((item, i) => {
-            createCard(item, category, i);
-        });
-    }
-
-    function createCard(item, cat, index) {
-        const card = document.createElement('div');
-        card.className = 'dhikr-card';
-        let currentCount = 0;
-        const targetCount = item.count || 1;
-
-        card.innerHTML = `
-            <div class="dhikr-text">${item.text}</div>
-            <div class="counter-section">
-                <span>العدد المطلوب: ${targetCount}</span>
-                <span class="count-num" id="num-${cat}-${index}">0</span>
-            </div>
-            <div class="progress-bar" id="prog-${cat}-${index}"></div>
-        `;
-
-        card.onclick = () => {
-            if (currentCount < targetCount) {
-                currentCount++;
-                const numDisplay = document.getElementById(`num-${cat}-${index}`);
-                const prog = document.getElementById(`prog-${cat}-${index}`);
-                
-                numDisplay.innerText = currentCount;
-                prog.style.width = (currentCount / targetCount * 100) + "%";
-
-                if (navigator.vibrate) navigator.vibrate(40);
-
-                if (currentCount === targetCount) {
-                    card.classList.add('done');
-                    numDisplay.innerText = "✓ تم";
-                }
-            }
-        };
-        container.appendChild(card);
-    }
-
-    function searchDhikr() {
-        const term = document.getElementById('searchInput').value.toLowerCase();
-        if (term.length < 2) { renderDhikr(activeCategory); return; }
-        
-        container.innerHTML = "";
         Object.keys(dhikrData).forEach(cat => {
-            dhikrData[cat].forEach((item, i) => {
-                if (item.text.toLowerCase().includes(term)) {
-                    createCard(item, cat, i);
-                }
-            });
+            const div = document.createElement('div');
+            div.className = 'cat-item';
+            div.innerText = cat;
+            div.onclick = () => openCategory(cat);
+            menuGrid.appendChild(div);
         });
     }
 
-    function toggleTheme() {
-        const body = document.body;
-        body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+    function openCategory(name) {
+        mainMenu.style.display = 'none';
+        dhikrView.style.display = 'block';
+        catTitle.innerText = name;
+        dhikrList.innerHTML = '';
+        window.scrollTo(0,0);
+
+        dhikrData[name].forEach((item, i) => {
+            const card = document.createElement('div');
+            card.className = 'dhikr-card';
+            
+            // استخراج العدد من النص إن وجد، وإلا افتراض 1
+            let target = 1;
+            if (item.includes('(3 مرات)')) target = 3;
+            else if (item.includes('(7 مرات)')) target = 7;
+            else if (item.includes('(100 مرة)')) target = 100;
+            else if (item.includes('(10 مرات)')) target = 10;
+
+            let current = 0;
+
+            card.innerHTML = `
+                <div class="dhikr-text">${item}</div>
+                <button class="counter-btn" id="btn-${i}">${target}</button>
+            `;
+
+            const btn = card.querySelector(`#btn-${i}`);
+            btn.onclick = () => {
+                if (current < target) {
+                    current++;
+                    btn.innerText = target - current;
+                    if (navigator.vibrate) navigator.vibrate(40);
+                    if (current === target) {
+                        btn.innerText = "تم";
+                        btn.classList.add('done');
+                    }
+                }
+            };
+            dhikrList.appendChild(card);
+        });
+    }
+
+    function goBack() {
+        mainMenu.style.display = 'block';
+        dhikrView.style.display = 'none';
     }
 
     window.onload = init;
 </script>
 </body>
 </html>
+ 
