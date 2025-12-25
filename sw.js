@@ -1,14 +1,13 @@
-const CACHE_NAME = 'sanad-islamic-v2';
+const CACHE_NAME = 'sanad-app-v3';
 const assets = [
   './',
   './index.html',
   './dhikr-data.js',
   './manifest.json',
-  'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap',
-  'https://cdn-icons-png.flaticon.com/512/2805/2805355.png'
+  './icon.png',
+  'https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap'
 ];
 
-// 1. تثبيت الخدمة
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -17,7 +16,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// 2. تفعيل الخدمة وتنظيف الكاش القديم
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -29,7 +27,6 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. استراتيجية الكاش أولاً
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
