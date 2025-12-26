@@ -1,4 +1,4 @@
-const CACHE_NAME = 'MUSLIM DHIKR-app-v6'; // تم التحديث إلى v4 لإجبار التحديث
+const CACHE_NAME = 'MUSLIM DHIKR-app-v7'; // تم التحديث إلى v4 لإجبار التحديث
 const assets = [
   './',
   './index.html',
