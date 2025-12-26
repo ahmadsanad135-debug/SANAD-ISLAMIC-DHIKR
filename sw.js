@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanad-app-v3';
+const CACHE_NAME = 'sanad-app-v4'; // تم التحديث إلى v4 لإجبار التحديث
 const assets = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const assets = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting(); // تفعيل التحديث فوراً
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(assets);
@@ -25,6 +26,7 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
+  self.clients.claim(); // السيطرة على الصفحات المفتوحة فوراً
 });
 
 self.addEventListener('fetch', (event) => {
