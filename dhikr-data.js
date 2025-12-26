@@ -189,42 +189,5 @@ const dhikrData = {
         { "text": "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ.", "count": 100 },
         { "text": "لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ.", "count": 100 }
     ], 
-function checkDailyReset() {
-    const lastDate = localStorage.getItem('lastResetDate');
-    const today = new Date().toISOString().split('T')[0];
-
-    if (lastDate && lastDate !== today) {
-        Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('count_') || key.includes('dhikr_count')) {
-                localStorage.removeItem(key);
-            }
-        });
-        console.log("تم تجديد العدادات ليوم جديد");
-    }
-    localStorage.setItem('lastResetDate', today);
-}
-
-function checkReminderTime() {
-    const currentTime = new Date().toTimeString().slice(0,5);
-    const mTime = localStorage.getItem('morningTime');
-    const eTime = localStorage.getItem('eveningTime');
-
-    if (currentTime === mTime) sendNotify("أذكار الصباح", "حان الآن وقت أذكار الصباح، حفظك الله.");
-    if (currentTime === eTime) sendNotify("أذكار المساء", "حان الآن وقت أذكار المساء، تقبل الله منك.");
-}
-
-function sendNotify(title, body) {
-    if (Notification.permission === "granted") {
-        navigator.serviceWorker.ready.then(reg => {
-            reg.showNotification(title, {
-                body,
-                icon: 'icon.png',
-                vibrate: [200, 100, 200],
-                tag: 'daily-reminder'
-            });
-        });
-    }
-}
-
-checkDailyReset();
-checkReminderTime(); 
+};
+ 
