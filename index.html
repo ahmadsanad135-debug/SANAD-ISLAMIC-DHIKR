@@ -2,468 +2,146 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f3d0f">
-    <title>سند المسلم</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أذكاري - تطبيق الأذكار اليومي</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #0f3d0f;
-            --accent: #d4af37;
-            --bg: #f5f5f5;
-            --card: #ffffff;
-            --text: #333333;
-            --text-sec: #666666;
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
 
-        [data-theme="dark"] {
-            --primary: #1a4d1a;
-            --accent: #f0c445;
-            --bg: #121212;
-            --card: #1e1e1e;
-            --text: #e0e0e0;
-            --text-sec: #aaaaaa;
-            --shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; padding-bottom: 80px; }
-
-        header {
-            background: linear-gradient(135deg, var(--primary), #0a290a);
-            color: white;
+        body {
+            font-family: 'Amiri', serif;
+            background-color: #f4f7f6;
+            margin: 0;
             padding: 20px;
-            border-radius: 0 0 30px 30px;
-            box-shadow: var(--shadow);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        h1 { font-size: 1.5rem; font-weight: 700; }
-        
-        .theme-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* حاوية التصنيفات */
-        .container { padding: 20px; max-width: 800px; margin: 0 auto; }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .card {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 2px solid transparent;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
         }
 
-        .card:active { transform: scale(0.96); }
-        .card:hover { border-color: var(--accent); }
+        h1 { color: #2e7d32; }
 
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            fill: var(--primary);
-            margin-bottom: 5px;
-        }
-        
-        [data-theme="dark"] .card-icon { fill: var(--accent); }
-
-        .card h3 { font-size: 1rem; color: var(--text); }
-        .card span { font-size: 0.8rem; color: var(--text-sec); }
-
-        /* صفحة الأذكار */
-        #dhikr-page {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg);
-            z-index: 200;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .page-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 15px;
-        }
-
-        .back-btn {
-            background: var(--card);
-            border: none;
-            padding: 10px;
-            border-radius: 12px;
-            color: var(--primary);
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            font-size: 1.2rem;
-            width: 45px;
-            height: 45px;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 10px;
-            margin: 10px 0 20px;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--accent);
-            width: 0%;
-            transition: width 0.3s;
-        }
-
+        /* تنسيق الخط المعتدل للأذكار */
         .dhikr-card {
-            background: var(--card);
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            border-right: 4px solid var(--primary);
-            transition: 0.3s;
-        }
-
-        .dhikr-card.completed {
-            opacity: 0.6;
-            border-color: #4CAF50;
-            background: rgba(76, 175, 80, 0.05);
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
         }
 
         .dhikr-text {
-            font-family: 'Amiri', serif;
-            font-size: 1.4rem;
+            font-size: 1.4rem; /* حجم معتدل */
             line-height: 1.8;
-            margin-bottom: 20px;
+            color: #333;
+            margin-bottom: 15px;
         }
 
-        .dhikr-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-
-        .count-badge {
-            background: var(--primary);
+        .counter-btn {
+            background-color: #2e7d32;
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-        
-        .tap-area {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 1;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1.2rem;
+            border-radius: 8px;
             cursor: pointer;
+            transition: 0.3s;
         }
-        
-        /* زر التثبيت */
-        #install-btn {
+
+        .counter-btn:active { transform: scale(0.95); }
+
+        /* واجهة إعدادات التذكير */
+        #settings-modal {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--accent);
-            color: #000;
-            padding: 12px 25px;
-            border-radius: 30px;
-            border: none;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-            z-index: 300;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            width: 90%;
+            max-width: 350px;
             display: none;
-            animation: bounce 2s infinite;
         }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
-            40% {transform: translateX(-50%) translateY(-10px);}
-            60% {transform: translateX(-50%) translateY(-5px);}
-        }
-        
-        /* تأثير النقر */
-        .click-effect {
-            position: absolute;
-            background: rgba(212, 175, 55, 0.3);
+        .settings-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: #2e7d32;
+            color: white;
+            border: none;
             border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            pointer-events: none;
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        @keyframes ripple {
-            to { transform: scale(4); opacity: 0; }
+        input[type="time"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>سند المسلم</h1>
-        <button class="theme-btn" onclick="toggleTheme()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-        </button>
-    </header>
-
-    <div class="container" id="home-page">
-        <div class="grid" id="categories-grid"></div>
-    </div>
-
-    <div id="dhikr-page">
-        <div class="page-header">
-            <button class="back-btn" onclick="showHome()">➜</button>
-            <h2 id="page-title">العنوان</h2>
-            <span id="progress-text" style="margin-right:auto; font-weight:bold; color:var(--primary)">0%</span>
+    <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+    <h1>أذكار المسلم</h1>
+    
+    <div id="dhikr-container">
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-        <div id="dhikr-list"></div>
-    </div>
 
-    <button id="install-btn" onclick="installApp()">تثبيت التطبيق ⬇</button>
+    <div id="settings-modal">
+        <h3 style="margin-top:0; color:#2e7d32;">ضبط التذكيرات</h3>
+        <label>وقت أذكار الصباح:</label>
+        <input type="time" id="morningTime">
+        <label>وقت أذكار المساء:</label>
+        <input type="time" id="eveningTime">
+        <button class="counter-btn" style="width:100%; margin-top:10px;" onclick="saveSettings()">حفظ وتفعيل</button>
+        <button onclick="toggleSettings()" style="width:100%; margin-top:5px; border:none; background:none; color:grey; cursor:pointer;">إلغاء</button>
+    </div>
 
     <script src="dhikr-data.js"></script>
     <script>
-        // --- إدارة النسخة وتنظيف البيانات القديمة ---
-        const APP_VERSION = 'v4.0';
-        function checkVersion() {
-            const storedVersion = localStorage.getItem('app_version');
-            if (storedVersion !== APP_VERSION) {
-                console.log('Detected new version. Clearing old data...');
-                // نحتفظ بوضع الثيم (Dark Mode) فقط
-                const theme = localStorage.getItem('theme');
-                localStorage.clear();
-                if(theme) localStorage.setItem('theme', theme);
-                
-                localStorage.setItem('app_version', APP_VERSION);
-            }
-        }
-        checkVersion();
-        // ---------------------------------------------
-
-        const grid = document.getElementById('categories-grid');
-        const dhikrPage = document.getElementById('dhikr-page');
-        const homePage = document.getElementById('home-page');
-        const dhikrList = document.getElementById('dhikr-list');
-        const pageTitle = document.getElementById('page-title');
-        const progressFill = document.getElementById('progress-fill');
-        const progressText = document.getElementById('progress-text');
-        const installBtn = document.getElementById('install-btn');
-        let deferredPrompt;
-
-        // دالة لاختيار الأيقونة المناسبة حسب اسم التصنيف
-        function getCategoryIcon(name) {
-            // مسارات SVG للأيقونات
-            const icons = {
-                sun: '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>',
-                moon: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>',
-                prayer: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>', // كرة أرضية كرمز عام أو سجادة
-                hands: '<path d="M18.5 13c-1.38 0-2.5 1.12-2.5 2.5v4.5c0 .28.22.5.5.5s.5-.22.5-.5V15.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v4.5c0 2.76-2.24 5-5 5-2.76 0-5-2.24-5-5v-5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5.5c0 .28.22.5.5.5s.5-.22.5-.5v-4.5c0-1.38-1.12-2.5-2.5-2.5-1.38 0-2.5 1.12-2.5 2.5v5.5c0 3.87 3.13 7 7 7s7-3.13 7-7v-5.5c0-1.38-1.12-2.5-2.5-2.5z"/>', // يدين
-                mosque: '<path d="M22 22H2v-2h20v2zm-10-8L7 9.29V6h10v3.29L12 14zM12 2C9.5 2 7.4 3.8 7 6.2c0 .1 0 .3.1.4h9.8c.1-.1.1-.3.1-.4C16.6 3.8 14.5 2 12 2z"/>', // قبة (تقريبي)
-                home: '<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>',
-                travel: '<path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>',
-                food: '<path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>',
-                sleep: '<path d="M20,12c0-4.42-3.58-8-8-8c-0.57,0-1.13,0.06-1.68,0.16C12.78,4.72,14.5,7.12,14.5,10 c0,4.24-3.32,7.7-7.5,7.95C7.57,17.98,8.12,18,8.68,18C13.1,18,16.68,14.42,16.68,10c0-0.41-0.03-0.81-0.09-1.2 C18.52,9.88,20,10.87,20,12z"/>', // سرير أو قمر
-                water: '<path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/>', // قطرة
-                clothes: '<path d="M20.57 6.58l-1.39-1.02L13 9.47V4h-2v5.47L4.82 5.56 3.43 6.58 11 12.35V22h2v-9.65l7.57-5.77z"/>', // شماعة/قميص
-                door: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-2h-2v2zm-4 0h2v-2H8v2z"/>', // باب
-                adhan: '<path d="M12 3v10.55c-3.6.43-6.64 2.6-8.26 5.45H3v2h18v-2h-.74c-1.62-2.85-4.66-5.02-8.26-5.45V3h10V1h-2v2h-8z"/>', // منارة أو صوت
-                quran: '<path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>' // كتاب
-            };
-
-            if (name.includes('الصباح')) return icons.sun;
-            if (name.includes('المساء')) return icons.moon;
-            if (name.includes('النوم') || name.includes('الاستيقاظ')) return icons.sleep;
-            if (name.includes('الوضوء') || name.includes('المطر')) return icons.water;
-            if (name.includes('الخلاء')) return icons.door;
-            if (name.includes('اللباس')) return icons.clothes;
-            if (name.includes('الأذان') || name.includes('المسجد')) return icons.mosque;
-            if (name.includes('المنزل')) return icons.home;
-            if (name.includes('الطعام')) return icons.food;
-            if (name.includes('السفر')) return icons.travel;
-            if (name.includes('القرآن') || name.includes('الرقية')) return icons.quran;
-            if (name.includes('الصلاة')) return icons.prayer;
-            
-            return icons.hands; // الافتراضي
-        }
-
-        function init() {
-            grid.innerHTML = '';
-            Object.keys(dhikrData).forEach(category => {
-                const count = dhikrData[category].length;
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <svg class="card-icon" viewBox="0 0 24 24">${getCategoryIcon(category)}</svg>
-                    <h3>${category}</h3>
-                    <span>${count} ذكر</span>
-                `;
-                card.onclick = () => openCategory(category);
-                grid.appendChild(card);
-            });
-
-            // تطبيق الثيم المحفوظ
-            if(localStorage.getItem('theme') === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-            }
-        }
-
-        function toggleTheme() {
-            if(document.body.getAttribute('data-theme') === 'dark') {
-                document.body.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.body.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        function openCategory(category) {
-            homePage.style.display = 'none';
-            dhikrPage.style.display = 'block';
-            pageTitle.innerText = category;
-            renderDhikrList(category);
-            updateProgress(category);
-            window.scrollTo(0,0);
-        }
-
-        function renderDhikrList(category) {
-            dhikrList.innerHTML = '';
-            dhikrData[category].forEach((item, idx) => {
-                const saved = getSavedCount(category, idx);
-                const isCompleted = saved >= item.count;
-                
-                const div = document.createElement('div');
-                div.className = `dhikr-card ${isCompleted ? 'completed' : ''}`;
-                div.id = `card-${idx}`;
-                
-                div.innerHTML = `
-                    <div class="tap-area" onclick="incrementDhikr('${category}', ${idx}, ${item.count}, this)"></div>
-                    <div class="dhikr-text">${item.text}</div>
-                    <div class="dhikr-controls">
-                        <span class="count-badge" id="badge-${idx}">${saved} / ${item.count}</span>
-                        <div style="font-size:0.8rem; color:var(--text-sec)">اضغط للعد</div>
-                    </div>
-                `;
-                dhikrList.appendChild(div);
-            });
-        }
-
-        function incrementDhikr(category, idx, max, element) {
-            let current = getSavedCount(category, idx);
-            if (current < max) {
-                current++;
-                saveCount(category, idx, current);
-                document.getElementById(`badge-${idx}`).innerText = `${current} / ${max}`;
-                
-                // تأثير بصري
-                const rect = element.getBoundingClientRect();
-                const circle = document.createElement('div');
-                circle.className = 'click-effect';
-                circle.style.left = `${event.clientX - rect.left}px`;
-                circle.style.top = `${event.clientY - rect.top}px`;
-                element.parentElement.appendChild(circle);
-                setTimeout(() => circle.remove(), 600);
-
-                if (current >= max) {
-                    navigator.vibrate([50, 50, 50]); // اهتزاز عند الانتهاء
-                    document.getElementById(`card-${idx}`).classList.add('completed');
-                } else {
-                    navigator.vibrate(30); // اهتزاز خفيف مع كل ضغطة
-                }
-                updateProgress(category);
-            }
-        }
-
-        function getSavedCount(cat, idx) {
-            return parseInt(localStorage.getItem(`dhikr-${cat}-${idx}`)) || 0;
-        }
-
-        function saveCount(cat, idx, val) {
-            localStorage.setItem(`dhikr-${cat}-${idx}`, val);
-        }
-
-        function updateProgress(category) {
-            const total = dhikrData[category].length;
-            let done = 0;
-            dhikrData[category].forEach((item, idx) => {
-                if(getSavedCount(category, idx) >= item.count) done++;
-            });
-            const percent = total === 0 ? 0 : Math.round((done / total) * 100);
-            progressFill.style.width = `${percent}%`;
-            progressText.innerText = `${percent}%`;
-        }
-
-        function showHome() {
-            homePage.style.display = 'block';
-            dhikrPage.style.display = 'none';
-        }
-
-        // PWA Install
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
-
-        async function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    installBtn.style.display = 'none';
-                }
-                deferredPrompt = null;
-            }
-        }
-
-        // Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(() => console.log('Service Worker Registered'))
-                .catch(err => console.error('SW Error:', err));
+            navigator.serviceWorker.register('sw.js');
         }
 
-        init();
+        function toggleSettings() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function saveSettings() {
+            const morning = document.getElementById('morningTime').value;
+            const evening = document.getElementById('eveningTime').value;
+            
+            if (!morning || !evening) {
+                alert("يرجى تحديد الوقت للصباح والمساء");
+                return;
+            }
+
+            localStorage.setItem('morningTime', morning);
+            localStorage.setItem('eveningTime', evening);
+            
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    alert("تم حفظ التوقيت وتفعيل التنبيهات بنجاح");
+                    toggleSettings();
+                } else {
+                    alert("يرجى السماح بالتنبيهات من إعدادات الهاتف ليعمل التذكير");
+                }
+            });
+        }
     </script>
 </body>
 </html>
