@@ -476,10 +476,47 @@
             }
         }
 
-        function sendNotification(title, body) {
-            if (Notification.permission === "granted") {
-                new Notification(title, { body: body, icon: 'icon.png' });
+        // طلب إذن الإشعارات عند حفظ الإعدادات
+function saveReminders() {
+    const mTime = document.getElementById('morning-time-input').value;
+    const eTime = document.getElementById('evening-time-input').value;
+    
+    if (mTime) localStorage.setItem('morning_time', mTime);
+    if (eTime) localStorage.setItem('evening_time', eTime);
+
+    if ("Notification" in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                // إخبار الـ Service Worker بالأوقات الجديدة
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'UPDATE_REMINDERS',
+                        morning: mTime,
+                        evening: eTime
+                    });
+                }
+                alert("✅ تم تفعيل التنبيهات بنجاح!");
+                closeSettings();
+            } else {
+                alert("⚠️ يرجى السماح بالإشعارات من إعدادات المتصفح.");
             }
+        });
+    }
+
+// تعديل وظيفة الإرسال لتستخدم الـ Service Worker (للعمل في الخلفية)
+function sendNotification(title, body) {
+    if (Notification.permission === "granted" && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification(title, {
+                body: body,
+                icon: 'icon.png',
+                badge: 'icon.png',
+                vibrate: [200, 100, 200]
+            });
+        });
+    }
+}
+
         }
 
         setInterval(checkTime, 60000);
