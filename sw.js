@@ -1,4 +1,4 @@
-const cacheName = 'azkar-v4-final'; // تغيير الاسم لضمان التحديث
+const cacheName = 'azkar-v5-final'; // تغيير الاسم لضمان التحديث
 const assets = [
   './',
   './index.html',
