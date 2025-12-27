@@ -48,6 +48,12 @@
 
         h1 { font-size: 1.5rem; font-weight: 700; }
         
+        /* حاوية الأزرار في الهيدر */
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
         .theme-btn {
             background: rgba(255,255,255,0.1);
             border: none;
@@ -60,7 +66,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: 0.2s;
         }
+        
+        .theme-btn:active { transform: scale(0.9); }
 
         /* حاوية التصنيفات */
         .container { padding: 20px; max-width: 800px; margin: 0 auto; }
@@ -234,16 +243,121 @@
             to { transform: scale(4); opacity: 0; }
         }
 
+        /* --- تنسيق نافذة التنبيهات الجديدة --- */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .settings-content {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .settings-content h3 { margin-bottom: 25px; color: var(--primary); font-size: 1.3rem; }
+        [data-theme="dark"] .settings-content h3 { color: var(--accent); }
+
+        .time-input-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .time-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .time-input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid rgba(0,0,0,0.1);
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1.1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .time-input-group input:focus { border-color: var(--accent); }
+
+        .save-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 15px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .close-modal {
+            margin-top: 15px;
+            background: transparent;
+            border: none;
+            color: var(--text-sec);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
     </style>
 </head>
 <body>
 
     <header>
         <h1>سند المسلم</h1>
-        <button class="theme-btn" onclick="toggleTheme()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-        </button>
+        <div class="header-buttons">
+            <button class="theme-btn" onclick="openSettings()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                </svg>
+            </button>
+            <button class="theme-btn" onclick="toggleTheme()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+            </button>
+        </div>
     </header>
+
+    <div id="settings-modal" class="settings-modal">
+        <div class="settings-content">
+            <h3>⏰ ضبط التذكير</h3>
+            <div class="time-input-group">
+                <label>🔔 موعد أذكار الصباح</label>
+                <input type="time" id="morning-time-input">
+            </div>
+            <div class="time-input-group">
+                <label>🔔 موعد أذكار المساء</label>
+                <input type="time" id="evening-time-input">
+            </div>
+            <button class="save-btn" onclick="saveReminders()">حفظ وتفعيل</button>
+            <button class="close-modal" onclick="closeSettings()">إغلاق</button>
+        </div>
+    </div>
 
     <div class="container" id="home-page">
         <div class="grid" id="categories-grid"></div>
@@ -264,15 +378,20 @@
     <script src="dhikr-data.js"></script>
     <script>
         // --- إدارة النسخة وتنظيف البيانات القديمة ---
-        const APP_VERSION = 'v5.0';
+        const APP_VERSION = 'v5.1'; // تم تحديث النسخة
         function checkVersion() {
             const storedVersion = localStorage.getItem('app_version');
             if (storedVersion !== APP_VERSION) {
-                console.log('Detected new version. Clearing old data...');
-                // نحتفظ بوضع الثيم (Dark Mode) فقط
                 const theme = localStorage.getItem('theme');
+                const mTime = localStorage.getItem('morning_time');
+                const eTime = localStorage.getItem('evening_time');
+                
+                // تنظيف القديم والاحتفاظ بالبيانات الهامة
                 localStorage.clear();
+                
                 if(theme) localStorage.setItem('theme', theme);
+                if(mTime) localStorage.setItem('morning_time', mTime);
+                if(eTime) localStorage.setItem('evening_time', eTime);
                 
                 localStorage.setItem('app_version', APP_VERSION);
             }
@@ -290,24 +409,23 @@
         const installBtn = document.getElementById('install-btn');
         let deferredPrompt;
 
-        // دالة لاختيار الأيقونة المناسبة حسب اسم التصنيف
+        // دالة لاختيار الأيقونة المناسبة
         function getCategoryIcon(name) {
-            // مسارات SVG للأيقونات
             const icons = {
                 sun: '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>',
                 moon: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>',
-                prayer: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>', // كرة أرضية كرمز عام أو سجادة
-                hands: '<path d="M18.5 13c-1.38 0-2.5 1.12-2.5 2.5v4.5c0 .28.22.5.5.5s.5-.22.5-.5V15.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v4.5c0 2.76-2.24 5-5 5-2.76 0-5-2.24-5-5v-5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5.5c0 .28.22.5.5.5s.5-.22.5-.5v-4.5c0-1.38-1.12-2.5-2.5-2.5-1.38 0-2.5 1.12-2.5 2.5v5.5c0 3.87 3.13 7 7 7s7-3.13 7-7v-5.5c0-1.38-1.12-2.5-2.5-2.5z"/>', // يدين
-                mosque: '<path d="M22 22H2v-2h20v2zm-10-8L7 9.29V6h10v3.29L12 14zM12 2C9.5 2 7.4 3.8 7 6.2c0 .1 0 .3.1.4h9.8c.1-.1.1-.3.1-.4C16.6 3.8 14.5 2 12 2z"/>', // قبة (تقريبي)
+                prayer: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>',
+                hands: '<path d="M18.5 13c-1.38 0-2.5 1.12-2.5 2.5v4.5c0 .28.22.5.5.5s.5-.22.5-.5V15.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v4.5c0 2.76-2.24 5-5 5-2.76 0-5-2.24-5-5v-5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5.5c0 .28.22.5.5.5s.5-.22.5-.5v-4.5c0-1.38-1.12-2.5-2.5-2.5-1.38 0-2.5 1.12-2.5 2.5v5.5c0 3.87 3.13 7 7 7s7-3.13 7-7v-5.5c0-1.38-1.12-2.5-2.5-2.5z"/>',
+                mosque: '<path d="M22 22H2v-2h20v2zm-10-8L7 9.29V6h10v3.29L12 14zM12 2C9.5 2 7.4 3.8 7 6.2c0 .1 0 .3.1.4h9.8c.1-.1.1-.3.1-.4C16.6 3.8 14.5 2 12 2z"/>',
                 home: '<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>',
                 travel: '<path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>',
                 food: '<path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>',
-                sleep: '<path d="M20,12c0-4.42-3.58-8-8-8c-0.57,0-1.13,0.06-1.68,0.16C12.78,4.72,14.5,7.12,14.5,10 c0,4.24-3.32,7.7-7.5,7.95C7.57,17.98,8.12,18,8.68,18C13.1,18,16.68,14.42,16.68,10c0-0.41-0.03-0.81-0.09-1.2 C18.52,9.88,20,10.87,20,12z"/>', // سرير أو قمر
-                water: '<path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/>', // قطرة
-                clothes: '<path d="M20.57 6.58l-1.39-1.02L13 9.47V4h-2v5.47L4.82 5.56 3.43 6.58 11 12.35V22h2v-9.65l7.57-5.77z"/>', // شماعة/قميص
-                door: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-2h-2v2zm-4 0h2v-2H8v2z"/>', // باب
-                adhan: '<path d="M12 3v10.55c-3.6.43-6.64 2.6-8.26 5.45H3v2h18v-2h-.74c-1.62-2.85-4.66-5.02-8.26-5.45V3h10V1h-2v2h-8z"/>', // منارة أو صوت
-                quran: '<path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>' // كتاب
+                sleep: '<path d="M20,12c0-4.42-3.58-8-8-8c-0.57,0-1.13,0.06-1.68,0.16C12.78,4.72,14.5,7.12,14.5,10 c0,4.24-3.32,7.7-7.5,7.95C7.57,17.98,8.12,18,8.68,18C13.1,18,16.68,14.42,16.68,10c0-0.41-0.03-0.81-0.09-1.2 C18.52,9.88,20,10.87,20,12z"/>',
+                water: '<path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/>',
+                clothes: '<path d="M20.57 6.58l-1.39-1.02L13 9.47V4h-2v5.47L4.82 5.56 3.43 6.58 11 12.35V22h2v-9.65l7.57-5.77z"/>',
+                door: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-2h-2v2zm-4 0h2v-2H8v2z"/>',
+                adhan: '<path d="M12 3v10.55c-3.6.43-6.64 2.6-8.26 5.45H3v2h18v-2h-.74c-1.62-2.85-4.66-5.02-8.26-5.45V3h10V1h-2v2h-8z"/>',
+                quran: '<path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>'
             };
 
             if (name.includes('الصباح')) return icons.sun;
@@ -322,8 +440,7 @@
             if (name.includes('السفر')) return icons.travel;
             if (name.includes('القرآن') || name.includes('الرقية')) return icons.quran;
             if (name.includes('الصلاة')) return icons.prayer;
-            
-            return icons.hands; // الافتراضي
+            return icons.hands;
         }
 
         function init() {
@@ -341,7 +458,6 @@
                 grid.appendChild(card);
             });
 
-            // تطبيق الثيم المحفوظ
             if(localStorage.getItem('theme') === 'dark') {
                 document.body.setAttribute('data-theme', 'dark');
             }
@@ -395,7 +511,6 @@
                 saveCount(category, idx, current);
                 document.getElementById(`badge-${idx}`).innerText = `${current} / ${max}`;
                 
-                // تأثير بصري
                 const rect = element.getBoundingClientRect();
                 const circle = document.createElement('div');
                 circle.className = 'click-effect';
@@ -405,10 +520,10 @@
                 setTimeout(() => circle.remove(), 600);
 
                 if (current >= max) {
-                    navigator.vibrate([50, 50, 50]); // اهتزاز عند الانتهاء
+                    if("vibrate" in navigator) navigator.vibrate([50, 50, 50]);
                     document.getElementById(`card-${idx}`).classList.add('completed');
                 } else {
-                    navigator.vibrate(30); // اهتزاز خفيف مع كل ضغطة
+                    if("vibrate" in navigator) navigator.vibrate(30);
                 }
                 updateProgress(category);
             }
@@ -438,6 +553,85 @@
             dhikrPage.style.display = 'none';
         }
 
+        // --- كود التنبيهات (الجديد) ---
+        const modal = document.getElementById('settings-modal');
+        const morningInput = document.getElementById('morning-time-input');
+        const eveningInput = document.getElementById('evening-time-input');
+
+        function openSettings() {
+            morningInput.value = localStorage.getItem('morning_time') || '';
+            eveningInput.value = localStorage.getItem('evening_time') || '';
+            modal.style.display = 'flex';
+        }
+
+        function closeSettings() {
+            modal.style.display = 'none';
+        }
+
+        function saveReminders() {
+            const mTime = morningInput.value;
+            const eTime = eveningInput.value;
+
+            if (mTime) localStorage.setItem('morning_time', mTime);
+            if (eTime) localStorage.setItem('evening_time', eTime);
+
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        alert("✅ تم حفظ التذكيرات وتفعيلها بنجاح!");
+                        // إشعار تجريبي فوري للتأكد
+                        new Notification("تم تفعيل التنبيهات", {
+                            body: "سيتم تذكيرك بالأذكار في الأوقات المحددة إن شاء الله.",
+                            icon: 'icon.png'
+                        });
+                        closeSettings();
+                    } else {
+                        alert("⚠️ يرجى السماح بالإشعارات من إعدادات المتصفح.");
+                    }
+                });
+            } else {
+                alert("للأسف متصفحك لا يدعم التنبيهات.");
+                closeSettings();
+            }
+        }
+
+        function checkTime() {
+            const now = new Date();
+            // تنسيق الوقت HH:MM (نظام 24 ساعة)
+            const currentString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            
+            const savedMorning = localStorage.getItem('morning_time');
+            const savedEvening = localStorage.getItem('evening_time');
+            const lastNotified = localStorage.getItem('last_notified_time');
+
+            // لمنع التكرار في نفس الدقيقة
+            if (lastNotified === currentString) return;
+
+            if (savedMorning && currentString === savedMorning) {
+                sendNotification("☀️ أذكار الصباح", "أصبحنا وأصبح الملك لله.. حان وقت الأذكار");
+                localStorage.setItem('last_notified_time', currentString);
+            }
+
+            if (savedEvening && currentString === savedEvening) {
+                sendNotification("🌙 أذكار المساء", "أمسينا وأمسى الملك لله.. حان وقت الأذكار");
+                localStorage.setItem('last_notified_time', currentString);
+            }
+        }
+
+        function sendNotification(title, body) {
+            if (Notification.permission === "granted") {
+                new Notification(title, {
+                    body: body,
+                    icon: 'icon.png',
+                    vibrate: [200, 100, 200]
+                });
+            }
+        }
+
+        // تشغيل فحص الوقت كل 60 ثانية
+        setInterval(checkTime, 60000);
+        checkTime(); // تشغيل فوري عند الفتح
+
         // PWA Install
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -456,7 +650,6 @@
             }
         }
 
-        // Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js')
                 .then(() => console.log('Service Worker Registered'))
