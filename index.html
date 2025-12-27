@@ -48,11 +48,7 @@
 
         h1 { font-size: 1.5rem; font-weight: 700; }
         
-        /* حاوية الأزرار في الهيدر */
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-        }
+        .header-buttons { display: flex; gap: 10px; }
 
         .theme-btn {
             background: rgba(255,255,255,0.1);
@@ -71,7 +67,6 @@
         
         .theme-btn:active { transform: scale(0.9); }
 
-        /* حاوية التصنيفات */
         .container { padding: 20px; max-width: 800px; margin: 0 auto; }
         
         .grid {
@@ -98,19 +93,12 @@
         .card:active { transform: scale(0.96); }
         .card:hover { border-color: var(--accent); }
 
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            fill: var(--primary);
-            margin-bottom: 5px;
-        }
-        
+        .card-icon { width: 50px; height: 50px; fill: var(--primary); margin-bottom: 5px; }
         [data-theme="dark"] .card-icon { fill: var(--accent); }
 
         .card h3 { font-size: 1rem; color: var(--text); }
         .card span { font-size: 0.8rem; color: var(--text-sec); }
 
-        /* صفحة الأذكار */
         #dhikr-page {
             display: none;
             position: fixed;
@@ -121,12 +109,7 @@
             padding: 20px;
         }
 
-        .page-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 15px;
-        }
+        .page-header { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; }
 
         .back-btn {
             background: var(--card);
@@ -137,8 +120,7 @@
             box-shadow: var(--shadow);
             cursor: pointer;
             font-size: 1.2rem;
-            width: 45px;
-            height: 45px;
+            width: 45px; height: 45px;
         }
 
         .progress-bar {
@@ -150,12 +132,7 @@
             width: 100%;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: var(--accent);
-            width: 0%;
-            transition: width 0.3s;
-        }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 
         .dhikr-card {
             background: var(--card);
@@ -169,25 +146,11 @@
             transition: 0.3s;
         }
 
-        .dhikr-card.completed {
-            opacity: 0.6;
-            border-color: #4CAF50;
-            background: rgba(76, 175, 80, 0.05);
-        }
+        .dhikr-card.completed { opacity: 0.6; border-color: #4CAF50; background: rgba(76, 175, 80, 0.05); }
 
-        .dhikr-text {
-            font-family: 'Amiri', serif;
-            font-size: 1.4rem;
-            line-height: 1.8;
-            margin-bottom: 20px;
-        }
+        .dhikr-text { font-family: 'Amiri', serif; font-size: 1.4rem; line-height: 1.8; margin-bottom: 20px; }
 
-        .dhikr-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
+        .dhikr-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
 
         .count-badge {
             background: var(--primary);
@@ -198,29 +161,13 @@
             font-size: 0.9rem;
         }
         
-        .tap-area {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 1;
-            cursor: pointer;
-        }
+        .tap-area { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; cursor: pointer; }
         
-        /* زر التثبيت */
         #install-btn {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent);
-            color: #000;
-            padding: 12px 25px;
-            border-radius: 30px;
-            border: none;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-            z-index: 300;
-            display: none;
-            animation: bounce 2s infinite;
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: #000; padding: 12px 25px; border-radius: 30px;
+            border: none; font-weight: bold; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            z-index: 300; display: none; animation: bounce 2s infinite;
         }
 
         @keyframes bounce {
@@ -229,101 +176,40 @@
             60% {transform: translateX(-50%) translateY(-5px);}
         }
         
-        /* تأثير النقر */
         .click-effect {
-            position: absolute;
-            background: rgba(212, 175, 55, 0.3);
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            pointer-events: none;
+            position: absolute; background: rgba(212, 175, 55, 0.3); border-radius: 50%;
+            transform: scale(0); animation: ripple 0.6s linear; pointer-events: none;
         }
 
-        @keyframes ripple {
-            to { transform: scale(4); opacity: 0; }
-        }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
 
-        /* --- تنسيق نافذة التنبيهات الجديدة --- */
+        /* نافذة التنبيهات */
         .settings-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000;
+            justify-content: center; align-items: center;
         }
 
         .settings-content {
-            background: var(--card);
-            padding: 30px;
-            border-radius: 25px;
-            width: 90%;
-            max-width: 350px;
-            box-shadow: var(--shadow);
-            text-align: center;
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            background: var(--card); padding: 30px; border-radius: 25px;
+            width: 90%; max-width: 350px; box-shadow: var(--shadow); text-align: center;
         }
 
-        .settings-content h3 { margin-bottom: 25px; color: var(--primary); font-size: 1.3rem; }
-        [data-theme="dark"] .settings-content h3 { color: var(--accent); }
+        .settings-content h3 { margin-bottom: 25px; color: var(--primary); }
 
-        .time-input-group {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .time-input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--text);
-            font-size: 0.9rem;
-        }
-
+        .time-input-group { margin-bottom: 20px; text-align: right; }
+        .time-input-group label { display: block; margin-bottom: 8px; font-weight: bold; }
         .time-input-group input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 2px solid rgba(0,0,0,0.1);
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Tajawal', sans-serif;
-            font-size: 1.1rem;
-            outline: none;
-            transition: 0.3s;
+            width: 100%; padding: 12px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1);
+            background: var(--bg); color: var(--text); font-family: 'Tajawal', sans-serif;
         }
-
-        .time-input-group input:focus { border-color: var(--accent); }
 
         .save-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 15px;
-            font-weight: bold;
-            margin-top: 10px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background: var(--primary); color: white; border: none; padding: 12px 30px;
+            border-radius: 15px; font-weight: bold; width: 100%; cursor: pointer;
         }
 
-        .close-modal {
-            margin-top: 15px;
-            background: transparent;
-            border: none;
-            color: var(--text-sec);
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
+        .close-modal { margin-top: 15px; background: transparent; border: none; color: var(--text-sec); cursor: pointer; }
 
     </style>
 </head>
@@ -377,24 +263,43 @@
 
     <script src="dhikr-data.js"></script>
     <script>
-        // --- إدارة النسخة وتنظيف البيانات القديمة ---
-        const APP_VERSION = 'v5.1'; // تم تحديث النسخة
+        // --- إدارة النسخة والتجديد التلقائي ---
+        const APP_VERSION = 'v6.0';
+
+        function checkDailyReset() {
+            const now = new Date();
+            // تحديد "اليوم البرمجي" (إذا كنا قبل الساعة 4 فجراً، نعتبر أننا ما زلنا في اليوم السابق)
+            const todayKey = new Date(now.getTime() - (4 * 60 * 60 * 1000)).toLocaleDateString();
+            
+            const lastResetDate = localStorage.getItem('last_reset_date');
+
+            if (lastResetDate !== todayKey) {
+                console.log('فجر جديد: يتم الآن تجديد الأذكار...');
+                // مسح كافة العدادات (التي تبدأ بـ dhikr-)
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('dhikr-')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                localStorage.setItem('last_reset_date', todayKey);
+                // إعادة تحميل الصفحة لتحديث الواجهة إذا كانت مفتوحة
+                if (lastResetDate) location.reload();
+            }
+        }
+
         function checkVersion() {
             const storedVersion = localStorage.getItem('app_version');
             if (storedVersion !== APP_VERSION) {
                 const theme = localStorage.getItem('theme');
                 const mTime = localStorage.getItem('morning_time');
                 const eTime = localStorage.getItem('evening_time');
-                
-                // تنظيف القديم والاحتفاظ بالبيانات الهامة
                 localStorage.clear();
-                
                 if(theme) localStorage.setItem('theme', theme);
                 if(mTime) localStorage.setItem('morning_time', mTime);
                 if(eTime) localStorage.setItem('evening_time', eTime);
-                
                 localStorage.setItem('app_version', APP_VERSION);
             }
+            checkDailyReset(); // فحص التجديد التلقائي عند التشغيل
         }
         checkVersion();
         // ---------------------------------------------
@@ -409,7 +314,6 @@
         const installBtn = document.getElementById('install-btn');
         let deferredPrompt;
 
-        // دالة لاختيار الأيقونة المناسبة
         function getCategoryIcon(name) {
             const icons = {
                 sun: '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>',
@@ -427,7 +331,6 @@
                 adhan: '<path d="M12 3v10.55c-3.6.43-6.64 2.6-8.26 5.45H3v2h18v-2h-.74c-1.62-2.85-4.66-5.02-8.26-5.45V3h10V1h-2v2h-8z"/>',
                 quran: '<path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>'
             };
-
             if (name.includes('الصباح')) return icons.sun;
             if (name.includes('المساء')) return icons.moon;
             if (name.includes('النوم') || name.includes('الاستيقاظ')) return icons.sleep;
@@ -449,37 +352,25 @@
                 const count = dhikrData[category].length;
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `
-                    <svg class="card-icon" viewBox="0 0 24 24">${getCategoryIcon(category)}</svg>
-                    <h3>${category}</h3>
-                    <span>${count} ذكر</span>
-                `;
+                card.innerHTML = `<svg class="card-icon" viewBox="0 0 24 24">${getCategoryIcon(category)}</svg><h3>${category}</h3><span>${count} ذكر</span>`;
                 card.onclick = () => openCategory(category);
                 grid.appendChild(card);
             });
-
-            if(localStorage.getItem('theme') === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-            }
+            if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
         }
 
         function toggleTheme() {
             if(document.body.getAttribute('data-theme') === 'dark') {
-                document.body.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
+                document.body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light');
             } else {
-                document.body.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
+                document.body.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark');
             }
         }
 
         function openCategory(category) {
-            homePage.style.display = 'none';
-            dhikrPage.style.display = 'block';
-            pageTitle.innerText = category;
-            renderDhikrList(category);
-            updateProgress(category);
-            window.scrollTo(0,0);
+            homePage.style.display = 'none'; dhikrPage.style.display = 'block';
+            pageTitle.innerText = category; renderDhikrList(category);
+            updateProgress(category); window.scrollTo(0,0);
         }
 
         function renderDhikrList(category) {
@@ -487,19 +378,16 @@
             dhikrData[category].forEach((item, idx) => {
                 const saved = getSavedCount(category, idx);
                 const isCompleted = saved >= item.count;
-                
                 const div = document.createElement('div');
                 div.className = `dhikr-card ${isCompleted ? 'completed' : ''}`;
                 div.id = `card-${idx}`;
-                
                 div.innerHTML = `
                     <div class="tap-area" onclick="incrementDhikr('${category}', ${idx}, ${item.count}, this)"></div>
                     <div class="dhikr-text">${item.text}</div>
                     <div class="dhikr-controls">
                         <span class="count-badge" id="badge-${idx}">${saved} / ${item.count}</span>
                         <div style="font-size:0.8rem; color:var(--text-sec)">اضغط للعد</div>
-                    </div>
-                `;
+                    </div>`;
                 dhikrList.appendChild(div);
             });
         }
@@ -510,7 +398,6 @@
                 current++;
                 saveCount(category, idx, current);
                 document.getElementById(`badge-${idx}`).innerText = `${current} / ${max}`;
-                
                 const rect = element.getBoundingClientRect();
                 const circle = document.createElement('div');
                 circle.className = 'click-effect';
@@ -518,7 +405,6 @@
                 circle.style.top = `${event.clientY - rect.top}px`;
                 element.parentElement.appendChild(circle);
                 setTimeout(() => circle.remove(), 600);
-
                 if (current >= max) {
                     if("vibrate" in navigator) navigator.vibrate([50, 50, 50]);
                     document.getElementById(`card-${idx}`).classList.add('completed');
@@ -529,31 +415,20 @@
             }
         }
 
-        function getSavedCount(cat, idx) {
-            return parseInt(localStorage.getItem(`dhikr-${cat}-${idx}`)) || 0;
-        }
-
-        function saveCount(cat, idx, val) {
-            localStorage.setItem(`dhikr-${cat}-${idx}`, val);
-        }
+        function getSavedCount(cat, idx) { return parseInt(localStorage.getItem(`dhikr-${cat}-${idx}`)) || 0; }
+        function saveCount(cat, idx, val) { localStorage.setItem(`dhikr-${cat}-${idx}`, val); }
 
         function updateProgress(category) {
             const total = dhikrData[category].length;
             let done = 0;
-            dhikrData[category].forEach((item, idx) => {
-                if(getSavedCount(category, idx) >= item.count) done++;
-            });
+            dhikrData[category].forEach((item, idx) => { if(getSavedCount(category, idx) >= item.count) done++; });
             const percent = total === 0 ? 0 : Math.round((done / total) * 100);
-            progressFill.style.width = `${percent}%`;
-            progressText.innerText = `${percent}%`;
+            progressFill.style.width = `${percent}%`; progressText.innerText = `${percent}%`;
         }
 
-        function showHome() {
-            homePage.style.display = 'block';
-            dhikrPage.style.display = 'none';
-        }
+        function showHome() { homePage.style.display = 'block'; dhikrPage.style.display = 'none'; }
 
-        // --- كود التنبيهات (الجديد) ---
+        // --- التنبيهات ---
         const modal = document.getElementById('settings-modal');
         const morningInput = document.getElementById('morning-time-input');
         const eveningInput = document.getElementById('evening-time-input');
@@ -564,96 +439,64 @@
             modal.style.display = 'flex';
         }
 
-        function closeSettings() {
-            modal.style.display = 'none';
-        }
+        function closeSettings() { modal.style.display = 'none'; }
 
         function saveReminders() {
-            const mTime = morningInput.value;
-            const eTime = eveningInput.value;
-
+            const mTime = morningInput.value; const eTime = eveningInput.value;
             if (mTime) localStorage.setItem('morning_time', mTime);
             if (eTime) localStorage.setItem('evening_time', eTime);
 
             if ("Notification" in window) {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        alert("✅ تم حفظ التذكيرات وتفعيلها بنجاح!");
-                        // إشعار تجريبي فوري للتأكد
-                        new Notification("تم تفعيل التنبيهات", {
-                            body: "سيتم تذكيرك بالأذكار في الأوقات المحددة إن شاء الله.",
-                            icon: 'icon.png'
-                        });
+                        alert("✅ تم تفعيل التنبيهات بنجاح!");
                         closeSettings();
-                    } else {
-                        alert("⚠️ يرجى السماح بالإشعارات من إعدادات المتصفح.");
-                    }
+                    } else { alert("⚠️ يرجى السماح بالإشعارات من المتصفح."); }
                 });
-            } else {
-                alert("للأسف متصفحك لا يدعم التنبيهات.");
-                closeSettings();
-            }
+            } else { alert("متصفحك لا يدعم التنبيهات."); closeSettings(); }
         }
 
         function checkTime() {
+            checkDailyReset(); // التأكد من التجديد التلقائي كل دقيقة أيضاً
             const now = new Date();
-            // تنسيق الوقت HH:MM (نظام 24 ساعة)
             const currentString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-            
             const savedMorning = localStorage.getItem('morning_time');
             const savedEvening = localStorage.getItem('evening_time');
             const lastNotified = localStorage.getItem('last_notified_time');
 
-            // لمنع التكرار في نفس الدقيقة
             if (lastNotified === currentString) return;
 
             if (savedMorning && currentString === savedMorning) {
-                sendNotification("☀️ أذكار الصباح", "أصبحنا وأصبح الملك لله.. حان وقت الأذكار");
+                sendNotification("☀️ أذكار الصباح", "حان وقت الأذكار.. أصبحنا وأصبح الملك لله");
                 localStorage.setItem('last_notified_time', currentString);
             }
-
             if (savedEvening && currentString === savedEvening) {
-                sendNotification("🌙 أذكار المساء", "أمسينا وأمسى الملك لله.. حان وقت الأذكار");
+                sendNotification("🌙 أذكار المساء", "حان وقت الأذكار.. أمسينا وأمسى الملك لله");
                 localStorage.setItem('last_notified_time', currentString);
             }
         }
 
         function sendNotification(title, body) {
             if (Notification.permission === "granted") {
-                new Notification(title, {
-                    body: body,
-                    icon: 'icon.png',
-                    vibrate: [200, 100, 200]
-                });
+                new Notification(title, { body: body, icon: 'icon.png' });
             }
         }
 
-        // تشغيل فحص الوقت كل 60 ثانية
         setInterval(checkTime, 60000);
-        checkTime(); // تشغيل فوري عند الفتح
+        checkTime();
 
-        // PWA Install
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
-
+        // PWA
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
         async function installApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    installBtn.style.display = 'none';
-                }
+                if (outcome === 'accepted') installBtn.style.display = 'none';
                 deferredPrompt = null;
             }
         }
-
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(() => console.log('Service Worker Registered'))
-                .catch(err => console.error('SW Error:', err));
+            navigator.serviceWorker.register('./sw.js').then(() => console.log('SW Registered'));
         }
 
         init();
