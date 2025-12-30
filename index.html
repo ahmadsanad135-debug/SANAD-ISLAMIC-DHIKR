@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0f3d0f">
+    <meta name="description" content="تطبيق أذكار المسلم - حصن المسلم الشامل">
     <title>أذكار المسلم</title>
+    <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -216,12 +218,12 @@
     <header>
         <h1>سند المسلم</h1>
         <div class="header-buttons">
-            <button class="theme-btn" onclick="openSettings()">
+            <button class="theme-btn" onclick="openSettings()" aria-label="الإعدادات">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
                 </svg>
             </button>
-            <button class="theme-btn" onclick="toggleTheme()">
+            <button class="theme-btn" onclick="toggleTheme()" aria-label="تغيير المظهر">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
             </button>
         </div>
@@ -245,6 +247,7 @@
 
     <div class="container" id="home-page">
         <div class="grid" id="categories-grid"></div>
+        <p id="loading-msg" style="text-align:center; margin-top:20px;">جاري تحميل الأذكار...</p>
     </div>
 
     <div id="dhikr-page">
@@ -259,38 +262,11 @@
 
     <button id="install-btn" onclick="installApp()">تثبيت التطبيق ⬇</button>
 
-    <script>
-        // --- 1. قاعدة البيانات (مدمجة) ---
-        const dhikrData = {
-            "أذكار الصباح": [
-                { text: "أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ، بِسْمِ اللهِ الرَّحْمنِ الرَّحِيم: ﴿اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْqَيُّومُ...﴾ [آية الكرسي]", count: 1 },
-                { text: "قُلْ هُوَ اللَّهُ أَحَدٌ، وَقُلْ أَعُوذُ بِرَبِّ الْفَلَقِ، وَقُلْ أَعُوذُ بِرَبِّ النَّاسِ.", count: 3 },
-                { text: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ...", count: 1 },
-                { text: "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ.", count: 1 },
-                { text: "سُبْحَانَ اللهِ وَبِحَمْدِهِ: عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ.", count: 3 }
-            ],
-            "أذكار المساء": [
-                { text: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ...", count: 1 },
-                { text: "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ.", count: 1 },
-                { text: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ.", count: 3 }
-            ],
-            "أذكار النوم": [
-                { text: "بِاسْمِكَ رَبِّـي وَضَعْـتُ جَنْـبِي، وَبِكَ أَرْفَعُـهُ...", count: 1 },
-                { text: "اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ...", count: 1 }
-            ],
-            "أذكار الصلاة": [
-                { text: "أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ.", count: 1 },
-                { text: "اللَّهُمَّ أَنْتَ السَّلاَمُ، وَمِنْكَ السَّلاَمُ، تَبَارَكْتَ يَا ذَا الْجَلاَلِ وَالإِكْرَامِ.", count: 1 }
-            ],
-            "تسابيح": [
-                { text: "سُبْحَانَ اللَّهِ.", count: 33 },
-                { text: "الْحَمْدُ لِلَّهِ.", count: 33 },
-                { text: "اللَّهُ أَكْبَرُ.", count: 33 }
-            ]
-        };
+    <script src="dhikr-data.js"></script>
 
-        // --- 2. المتغيرات العامة ---
-        const APP_VERSION = 'v6.0';
+    <script>
+        // المتغيرات العامة
+        const APP_VERSION = 'v7.0';
         const grid = document.getElementById('categories-grid');
         const dhikrPage = document.getElementById('dhikr-page');
         const homePage = document.getElementById('home-page');
@@ -301,7 +277,7 @@
         const installBtn = document.getElementById('install-btn');
         let deferredPrompt;
 
-        // --- 3. إدارة التجديد التلقائي ---
+        // --- 1. إدارة التجديد التلقائي ---
         function checkDailyReset() {
             const now = new Date();
             const todayKey = new Date(now.getTime() - (4 * 60 * 60 * 1000)).toLocaleDateString();
@@ -316,7 +292,7 @@
         }
         checkDailyReset();
 
-        // --- 4. أيقونات الأذكار ---
+        // --- 2. أيقونات الأذكار ---
         function getCategoryIcon(name) {
             const icons = {
                 sun: '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>',
@@ -328,13 +304,22 @@
             if (name.includes('الصباح')) return icons.sun;
             if (name.includes('المساء')) return icons.moon;
             if (name.includes('النوم')) return icons.sleep;
-            if (name.includes('الصلاة') || name.includes('تسابيح')) return icons.prayer;
+            if (name.includes('الصلاة') || name.includes('تسابيح') || name.includes('مسجد') || name.includes('وضوء')) return icons.prayer;
             return icons.hands;
         }
 
-        // --- 5. التشغيل الأولي (Init) ---
+        // --- 3. التشغيل الأولي (Init) ---
         function init() {
+            // التحقق من تحميل البيانات
+            if (typeof dhikrData === 'undefined') {
+                document.getElementById('loading-msg').innerHTML = '❌ خطأ: لم يتم العثور على ملف البيانات (dhikr-data.js).<br>تأكد من وجود الملف في نفس المجلد ومن اسمه الصحيح.';
+                document.getElementById('loading-msg').style.color = 'red';
+                return;
+            }
+
+            document.getElementById('loading-msg').style.display = 'none';
             grid.innerHTML = '';
+            
             Object.keys(dhikrData).forEach(category => {
                 const count = dhikrData[category].length;
                 const card = document.createElement('div');
@@ -343,10 +328,11 @@
                 card.onclick = () => openCategory(category);
                 grid.appendChild(card);
             });
+            
             if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
         }
 
-        // --- 6. وظائف الواجهة ---
+        // --- 4. وظائف الواجهة ---
         function toggleTheme() {
             if(document.body.getAttribute('data-theme') === 'dark') {
                 document.body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light');
@@ -363,6 +349,8 @@
 
         function renderDhikrList(category) {
             dhikrList.innerHTML = '';
+            if (!dhikrData[category]) return;
+
             dhikrData[category].forEach((item, idx) => {
                 const saved = getSavedCount(category, idx);
                 const isCompleted = saved >= item.count;
@@ -410,6 +398,7 @@
         function saveCount(cat, idx, val) { localStorage.setItem(`dhikr-${cat}-${idx}`, val); }
 
         function updateProgress(category) {
+            if (!dhikrData[category]) return;
             const total = dhikrData[category].length;
             let done = 0;
             dhikrData[category].forEach((item, idx) => { if(getSavedCount(category, idx) >= item.count) done++; });
@@ -419,7 +408,7 @@
 
         function showHome() { homePage.style.display = 'block'; dhikrPage.style.display = 'none'; }
 
-        // --- 7. التنبيهات ---
+        // --- 5. التنبيهات ---
         const modal = document.getElementById('settings-modal');
         const morningInput = document.getElementById('morning-time-input');
         const eveningInput = document.getElementById('evening-time-input');
@@ -482,7 +471,7 @@
         setInterval(checkTime, 60000);
         checkTime();
 
-        // --- 8. التثبيت (PWA) ---
+        // --- 6. التثبيت (PWA) ---
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
         async function installApp() {
             if (deferredPrompt) {
@@ -493,7 +482,8 @@
             }
         }
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(console.error);
+            // تم تعديل اسم الملف هنا ليكون sw.js
+            navigator.serviceWorker.register('sw.js').catch(console.error);
         }
 
         // تشغيل التطبيق
