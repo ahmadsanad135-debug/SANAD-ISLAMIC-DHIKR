@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0f3d0f">
     <title>أذكار المسلم</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -261,49 +259,38 @@
 
     <button id="install-btn" onclick="installApp()">تثبيت التطبيق ⬇</button>
 
-    <script src="dhikr-data.js"></script>
     <script>
-        // --- إدارة النسخة والتجديد التلقائي ---
+        // --- 1. قاعدة البيانات (مدمجة) ---
+        const dhikrData = {
+            "أذكار الصباح": [
+                { text: "أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ، بِسْمِ اللهِ الرَّحْمنِ الرَّحِيم: ﴿اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْqَيُّومُ...﴾ [آية الكرسي]", count: 1 },
+                { text: "قُلْ هُوَ اللَّهُ أَحَدٌ، وَقُلْ أَعُوذُ بِرَبِّ الْفَلَقِ، وَقُلْ أَعُوذُ بِرَبِّ النَّاسِ.", count: 3 },
+                { text: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ...", count: 1 },
+                { text: "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ.", count: 1 },
+                { text: "سُبْحَانَ اللهِ وَبِحَمْدِهِ: عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ.", count: 3 }
+            ],
+            "أذكار المساء": [
+                { text: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ...", count: 1 },
+                { text: "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ.", count: 1 },
+                { text: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ.", count: 3 }
+            ],
+            "أذكار النوم": [
+                { text: "بِاسْمِكَ رَبِّـي وَضَعْـتُ جَنْـبِي، وَبِكَ أَرْفَعُـهُ...", count: 1 },
+                { text: "اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ...", count: 1 }
+            ],
+            "أذكار الصلاة": [
+                { text: "أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ، أَسْتَغْفِرُ اللَّهَ.", count: 1 },
+                { text: "اللَّهُمَّ أَنْتَ السَّلاَمُ، وَمِنْكَ السَّلاَمُ، تَبَارَكْتَ يَا ذَا الْجَلاَلِ وَالإِكْرَامِ.", count: 1 }
+            ],
+            "تسابيح": [
+                { text: "سُبْحَانَ اللَّهِ.", count: 33 },
+                { text: "الْحَمْدُ لِلَّهِ.", count: 33 },
+                { text: "اللَّهُ أَكْبَرُ.", count: 33 }
+            ]
+        };
+
+        // --- 2. المتغيرات العامة ---
         const APP_VERSION = 'v6.0';
-
-        function checkDailyReset() {
-            const now = new Date();
-            // تحديد "اليوم البرمجي" (إذا كنا قبل الساعة 4 فجراً، نعتبر أننا ما زلنا في اليوم السابق)
-            const todayKey = new Date(now.getTime() - (4 * 60 * 60 * 1000)).toLocaleDateString();
-            
-            const lastResetDate = localStorage.getItem('last_reset_date');
-
-            if (lastResetDate !== todayKey) {
-                console.log('فجر جديد: يتم الآن تجديد الأذكار...');
-                // مسح كافة العدادات (التي تبدأ بـ dhikr-)
-                Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith('dhikr-')) {
-                        localStorage.removeItem(key);
-                    }
-                });
-                localStorage.setItem('last_reset_date', todayKey);
-                // إعادة تحميل الصفحة لتحديث الواجهة إذا كانت مفتوحة
-                if (lastResetDate) location.reload();
-            }
-        }
-
-        function checkVersion() {
-            const storedVersion = localStorage.getItem('app_version');
-            if (storedVersion !== APP_VERSION) {
-                const theme = localStorage.getItem('theme');
-                const mTime = localStorage.getItem('morning_time');
-                const eTime = localStorage.getItem('evening_time');
-                localStorage.clear();
-                if(theme) localStorage.setItem('theme', theme);
-                if(mTime) localStorage.setItem('morning_time', mTime);
-                if(eTime) localStorage.setItem('evening_time', eTime);
-                localStorage.setItem('app_version', APP_VERSION);
-            }
-            checkDailyReset(); // فحص التجديد التلقائي عند التشغيل
-        }
-        checkVersion();
-        // ---------------------------------------------
-
         const grid = document.getElementById('categories-grid');
         const dhikrPage = document.getElementById('dhikr-page');
         const homePage = document.getElementById('home-page');
@@ -314,38 +301,38 @@
         const installBtn = document.getElementById('install-btn');
         let deferredPrompt;
 
+        // --- 3. إدارة التجديد التلقائي ---
+        function checkDailyReset() {
+            const now = new Date();
+            const todayKey = new Date(now.getTime() - (4 * 60 * 60 * 1000)).toLocaleDateString();
+            const lastResetDate = localStorage.getItem('last_reset_date');
+            if (lastResetDate !== todayKey) {
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('dhikr-')) localStorage.removeItem(key);
+                });
+                localStorage.setItem('last_reset_date', todayKey);
+                if (lastResetDate) location.reload();
+            }
+        }
+        checkDailyReset();
+
+        // --- 4. أيقونات الأذكار ---
         function getCategoryIcon(name) {
             const icons = {
                 sun: '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>',
                 moon: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>',
                 prayer: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>',
-                hands: '<path d="M18.5 13c-1.38 0-2.5 1.12-2.5 2.5v4.5c0 .28.22.5.5.5s.5-.22.5-.5V15.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v4.5c0 2.76-2.24 5-5 5-2.76 0-5-2.24-5-5v-5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5.5c0 .28.22.5.5.5s.5-.22.5-.5v-4.5c0-1.38-1.12-2.5-2.5-2.5-1.38 0-2.5 1.12-2.5 2.5v5.5c0 3.87 3.13 7 7 7s7-3.13 7-7v-5.5c0-1.38-1.12-2.5-2.5-2.5z"/>',
-                mosque: '<path d="M22 22H2v-2h20v2zm-10-8L7 9.29V6h10v3.29L12 14zM12 2C9.5 2 7.4 3.8 7 6.2c0 .1 0 .3.1.4h9.8c.1-.1.1-.3.1-.4C16.6 3.8 14.5 2 12 2z"/>',
-                home: '<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>',
-                travel: '<path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>',
-                food: '<path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>',
                 sleep: '<path d="M20,12c0-4.42-3.58-8-8-8c-0.57,0-1.13,0.06-1.68,0.16C12.78,4.72,14.5,7.12,14.5,10 c0,4.24-3.32,7.7-7.5,7.95C7.57,17.98,8.12,18,8.68,18C13.1,18,16.68,14.42,16.68,10c0-0.41-0.03-0.81-0.09-1.2 C18.52,9.88,20,10.87,20,12z"/>',
-                water: '<path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/>',
-                clothes: '<path d="M20.57 6.58l-1.39-1.02L13 9.47V4h-2v5.47L4.82 5.56 3.43 6.58 11 12.35V22h2v-9.65l7.57-5.77z"/>',
-                door: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-2h-2v2zm-4 0h2v-2H8v2z"/>',
-                adhan: '<path d="M12 3v10.55c-3.6.43-6.64 2.6-8.26 5.45H3v2h18v-2h-.74c-1.62-2.85-4.66-5.02-8.26-5.45V3h10V1h-2v2h-8z"/>',
-                quran: '<path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>'
+                hands: '<path d="M18.5 13c-1.38 0-2.5 1.12-2.5 2.5v4.5c0 .28.22.5.5.5s.5-.22.5-.5V15.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v4.5c0 2.76-2.24 5-5 5-2.76 0-5-2.24-5-5v-5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5.5c0 .28.22.5.5.5s.5-.22.5-.5v-4.5c0-1.38-1.12-2.5-2.5-2.5-1.38 0-2.5 1.12-2.5 2.5v5.5c0 3.87 3.13 7 7 7s7-3.13 7-7v-5.5c0-1.38-1.12-2.5-2.5-2.5z"/>'
             };
             if (name.includes('الصباح')) return icons.sun;
             if (name.includes('المساء')) return icons.moon;
-            if (name.includes('النوم') || name.includes('الاستيقاظ')) return icons.sleep;
-            if (name.includes('الوضوء') || name.includes('المطر')) return icons.water;
-            if (name.includes('الخلاء')) return icons.door;
-            if (name.includes('اللباس')) return icons.clothes;
-            if (name.includes('الأذان') || name.includes('المسجد')) return icons.mosque;
-            if (name.includes('المنزل')) return icons.home;
-            if (name.includes('الطعام')) return icons.food;
-            if (name.includes('السفر')) return icons.travel;
-            if (name.includes('القرآن') || name.includes('الرقية')) return icons.quran;
-            if (name.includes('الصلاة')) return icons.prayer;
+            if (name.includes('النوم')) return icons.sleep;
+            if (name.includes('الصلاة') || name.includes('تسابيح')) return icons.prayer;
             return icons.hands;
         }
 
+        // --- 5. التشغيل الأولي (Init) ---
         function init() {
             grid.innerHTML = '';
             Object.keys(dhikrData).forEach(category => {
@@ -359,6 +346,7 @@
             if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
         }
 
+        // --- 6. وظائف الواجهة ---
         function toggleTheme() {
             if(document.body.getAttribute('data-theme') === 'dark') {
                 document.body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light');
@@ -382,7 +370,7 @@
                 div.className = `dhikr-card ${isCompleted ? 'completed' : ''}`;
                 div.id = `card-${idx}`;
                 div.innerHTML = `
-                    <div class="tap-area" onclick="incrementDhikr('${category}', ${idx}, ${item.count}, this)"></div>
+                    <div class="tap-area" onclick="incrementDhikr('${category}', ${idx}, ${item.count}, this, event)"></div>
                     <div class="dhikr-text">${item.text}</div>
                     <div class="dhikr-controls">
                         <span class="count-badge" id="badge-${idx}">${saved} / ${item.count}</span>
@@ -392,12 +380,14 @@
             });
         }
 
-        function incrementDhikr(category, idx, max, element) {
+        function incrementDhikr(category, idx, max, element, event) {
             let current = getSavedCount(category, idx);
             if (current < max) {
                 current++;
                 saveCount(category, idx, current);
                 document.getElementById(`badge-${idx}`).innerText = `${current} / ${max}`;
+                
+                // التأثير البصري
                 const rect = element.getBoundingClientRect();
                 const circle = document.createElement('div');
                 circle.className = 'click-effect';
@@ -405,6 +395,7 @@
                 circle.style.top = `${event.clientY - rect.top}px`;
                 element.parentElement.appendChild(circle);
                 setTimeout(() => circle.remove(), 600);
+
                 if (current >= max) {
                     if("vibrate" in navigator) navigator.vibrate([50, 50, 50]);
                     document.getElementById(`card-${idx}`).classList.add('completed');
@@ -428,7 +419,7 @@
 
         function showHome() { homePage.style.display = 'block'; dhikrPage.style.display = 'none'; }
 
-        // --- التنبيهات ---
+        // --- 7. التنبيهات ---
         const modal = document.getElementById('settings-modal');
         const morningInput = document.getElementById('morning-time-input');
         const eveningInput = document.getElementById('evening-time-input');
@@ -442,13 +433,17 @@
         function closeSettings() { modal.style.display = 'none'; }
 
         function saveReminders() {
-            const mTime = morningInput.value; const eTime = eveningInput.value;
+            const mTime = morningInput.value;
+            const eTime = eveningInput.value;
             if (mTime) localStorage.setItem('morning_time', mTime);
             if (eTime) localStorage.setItem('evening_time', eTime);
 
             if ("Notification" in window) {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
+                        if (navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.controller.postMessage({ type: 'UPDATE_REMINDERS', morning: mTime, evening: eTime });
+                        }
                         alert("✅ تم تفعيل التنبيهات بنجاح!");
                         closeSettings();
                     } else { alert("⚠️ يرجى السماح بالإشعارات من المتصفح."); }
@@ -457,132 +452,7 @@
         }
 
         function checkTime() {
-            checkDailyReset(); // التأكد من التجديد التلقائي كل دقيقة أيضاً
-            const now = new Date();
-            const currentString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-            const savedMorning = localStorage.getItem('morning_time');
-            const savedEvening = localStorage.getItem('evening_time');
-            const lastNotified = localStorage.getItem('last_notified_time');
-
-            if (lastNotified === currentString) return;
-
-            if (savedMorning && currentString === savedMorning) {
-                sendNotification("☀️ أذكار الصباح", "حان وقت الأذكار.. أصبحنا وأصبح الملك لله");
-                localStorage.setItem('last_notified_time', currentString);
-            }
-            if (savedEvening && currentString === savedEvening) {
-                sendNotification("🌙 أذكار المساء", "حان وقت الأذكار.. أمسينا وأمسى الملك لله");
-                localStorage.setItem('last_notified_time', currentString);
-            }
-        }
-
-        // طلب إذن الإشعارات عند حفظ الإعدادات
-function saveReminders() {
-    const mTime = document.getElementById('morning-time-input').value;
-    const eTime = document.getElementById('evening-time-input').value;
-    
-    if (mTime) localStorage.setItem('morning_time', mTime);
-    if (eTime) localStorage.setItem('evening_time', eTime);
-
-    if ("Notification" in window) {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                // إخبار الـ Service Worker بالأوقات الجديدة
-                if (navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({
-                        type: 'UPDATE_REMINDERS',
-                        morning: mTime,
-                        evening: eTime
-                    });
-                }
-                alert("✅ تم تفعيل التنبيهات بنجاح!");
-                closeSettings();
-            } else {
-                alert("⚠️ يرجى السماح بالإشعارات من إعدادات المتصفح.");
-            }
-        });
-    }
-
-// تعديل وظيفة الإرسال لتستخدم الـ Service Worker (للعمل في الخلفية)
-function sendNotification(title, body) {
-    if (Notification.permission === "granted" && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.ready.then(registration => {
-            registration.showNotification(title, {
-                body: body,
-                icon: 'icon.png',
-                badge: 'icon.png',
-                vibrate: [200, 100, 200]
-            });
-        });
-    }
-}
-
-        }
-
-        setInterval(checkTime, 60000);
-        checkTime();
-
-        // PWA
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
-        async function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') installBtn.style.display = 'none';
-                deferredPrompt = null;
-            }
-        }
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(() => console.log('SW Registered'));
-        }
-
-        init();
-// طلب إذن التنبيهات من المستخدم        // --- 1. إدارة التنبيهات والإعدادات ---
-        const modal = document.getElementById('settings-modal');
-        const morningInput = document.getElementById('morning-time-input');
-        const eveningInput = document.getElementById('evening-time-input');
-
-        function openSettings() {
-            morningInput.value = localStorage.getItem('morning_time') || '';
-            eveningInput.value = localStorage.getItem('evening_time') || '';
-            modal.style.display = 'flex';
-        }
-
-        function closeSettings() { modal.style.display = 'none'; }
-
-        function saveReminders() {
-            const mTime = morningInput.value; 
-            const eTime = eveningInput.value;
-            
-            if (mTime) localStorage.setItem('morning_time', mTime);
-            if (eTime) localStorage.setItem('evening_time', eTime);
-
-            if ("Notification" in window) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        // إرسال الأوقات للـ Service Worker ليعمل في الخلفية
-                        if (navigator.serviceWorker.controller) {
-                            navigator.serviceWorker.controller.postMessage({
-                                type: 'UPDATE_REMINDERS',
-                                morning: mTime,
-                                evening: eTime
-                            });
-                        }
-                        alert("✅ تم تفعيل التنبيهات بنجاح!");
-                        closeSettings();
-                    } else { 
-                        alert("⚠️ يرجى السماح بالإشعارات من إعدادات المتصفح."); 
-                    }
-                });
-            } else { 
-                alert("متصفحك لا يدعم التنبيهات."); 
-                closeSettings(); 
-            }
-        }
-
-        // فحص الوقت كل دقيقة (للتنبيه أثناء فتح التطبيق)
-        function checkTime() {
-            checkDailyReset(); 
+            checkDailyReset();
             const now = new Date();
             const currentString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
             const savedMorning = localStorage.getItem('morning_time');
@@ -602,27 +472,18 @@ function sendNotification(title, body) {
         }
 
         function sendNotification(title, body) {
-            if (Notification.permission === "granted") {
+            if (Notification.permission === "granted" && navigator.serviceWorker.controller) {
                 navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification(title, {
-                        body: body,
-                        icon: 'https://cdn-icons-png.flaticon.com/512/2805/2805355.png',
-                        badge: 'https://cdn-icons-png.flaticon.com/512/2805/2805355.png',
-                        vibrate: [200, 100, 200]
-                    });
+                    registration.showNotification(title, { body: body, vibrate: [200, 100, 200] });
                 });
             }
         }
 
         setInterval(checkTime, 60000);
+        checkTime();
 
-        // --- 2. إدارة تثبيت التطبيق (PWA) ---
-        window.addEventListener('beforeinstallprompt', (e) => { 
-            e.preventDefault(); 
-            deferredPrompt = e; 
-            installBtn.style.display = 'block'; 
-        });
-
+        // --- 8. التثبيت (PWA) ---
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
         async function installApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
@@ -631,15 +492,12 @@ function sendNotification(title, body) {
                 deferredPrompt = null;
             }
         }
-
-        // --- 3. تسجيل الخدمة والتشغيل النهائي ---
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(reg => {
-                console.log('SW Registered');
-            }).catch(err => console.log('SW Error:', err));
+            navigator.serviceWorker.register('./sw.js').catch(console.error);
         }
 
-        init(); // تشغيل التطبيق
+        // تشغيل التطبيق
+        init();
     </script>
 </body>
 </html>
