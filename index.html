@@ -537,50 +537,109 @@ function sendNotification(title, body) {
         }
 
         init();
-// طلب إذن التنبيهات من المستخدم
-function askNotificationPermission() {
-    if ('Notification' in window) {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                console.log('تم السماح بالتنبيهات');
-                // تجربة تنبيه فوري للتأكد
+// طلب إذن التنبيهات من المستخدم        // --- 1. إدارة التنبيهات والإعدادات ---
+        const modal = document.getElementById('settings-modal');
+        const morningInput = document.getElementById('morning-time-input');
+        const eveningInput = document.getElementById('evening-time-input');
+
+        function openSettings() {
+            morningInput.value = localStorage.getItem('morning_time') || '';
+            eveningInput.value = localStorage.getItem('evening_time') || '';
+            modal.style.display = 'flex';
+        }
+
+        function closeSettings() { modal.style.display = 'none'; }
+
+        function saveReminders() {
+            const mTime = morningInput.value; 
+            const eTime = eveningInput.value;
+            
+            if (mTime) localStorage.setItem('morning_time', mTime);
+            if (eTime) localStorage.setItem('evening_time', eTime);
+
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        // إرسال الأوقات للـ Service Worker ليعمل في الخلفية
+                        if (navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.controller.postMessage({
+                                type: 'UPDATE_REMINDERS',
+                                morning: mTime,
+                                evening: eTime
+                            });
+                        }
+                        alert("✅ تم تفعيل التنبيهات بنجاح!");
+                        closeSettings();
+                    } else { 
+                        alert("⚠️ يرجى السماح بالإشعارات من إعدادات المتصفح."); 
+                    }
+                });
+            } else { 
+                alert("متصفحك لا يدعم التنبيهات."); 
+                closeSettings(); 
+            }
+        }
+
+        // فحص الوقت كل دقيقة (للتنبيه أثناء فتح التطبيق)
+        function checkTime() {
+            checkDailyReset(); 
+            const now = new Date();
+            const currentString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            const savedMorning = localStorage.getItem('morning_time');
+            const savedEvening = localStorage.getItem('evening_time');
+            const lastNotified = localStorage.getItem('last_notified_time');
+
+            if (lastNotified === currentString) return;
+
+            if (savedMorning && currentString === savedMorning) {
+                sendNotification("☀️ أذكار الصباح", "حان وقت الأذكار.. أصبحنا وأصبح الملك لله");
+                localStorage.setItem('last_notified_time', currentString);
+            }
+            if (savedEvening && currentString === savedEvening) {
+                sendNotification("🌙 أذكار المساء", "حان وقت الأذكار.. أمسينا وأمسى الملك لله");
+                localStorage.setItem('last_notified_time', currentString);
+            }
+        }
+
+        function sendNotification(title, body) {
+            if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification('سند المسلم', {
-                        body: 'شكراً لتفعيل التنبيهات، سنذكرك بالأذكار يومياً.',
-                        icon: 'https://cdn-icons-png.flaticon.com/512/2805/2805355.png'
+                    registration.showNotification(title, {
+                        body: body,
+                        icon: 'https://cdn-icons-png.flaticon.com/512/2805/2805355.png',
+                        badge: 'https://cdn-icons-png.flaticon.com/512/2805/2805355.png',
+                        vibrate: [200, 100, 200]
                     });
                 });
             }
-        });
-    }
-}
+        }
 
-// استدعاء الدالة عند تحميل الموقع
-    <script>
-    // 1. تسجيل الـ Service Worker وتشغيل التنبيهات
-    if ('serviceWorker' in navigator && 'Notification' in window) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(registration => {
-                    console.log('Service Worker Registered');
+        setInterval(checkTime, 60000);
 
-                    // 2. طلب إذن التنبيهات
-                    Notification.requestPermission().then(permission => {
-                        if (permission === 'granted') {
-                            console.log('تم السماح بالتنبيهات');
-                            
-                            // 3. تجربة تنبيه وهمي بعد 5 ثواني للتأكد
-                            setTimeout(() => {
-                                registration.showNotification("تذكير تجريبي", {
-                                    body: "نظام التنبيهات يعمل بنجاح! ✅",
-                                    icon: "https://cdn-icons-png.flaticon.com/512/2805/2805355.png",
-                                    vibrate: [200, 100, 200]
-                                });
-                            }, 5000);
-                        }
-                    });
-                })
-                .catch(err => console.log('Service Worker Error:', err));
+        // --- 2. إدارة تثبيت التطبيق (PWA) ---
+        window.addEventListener('beforeinstallprompt', (e) => { 
+            e.preventDefault(); 
+            deferredPrompt = e; 
+            installBtn.style.display = 'block'; 
         });
-    }
-</script>
+
+        async function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') installBtn.style.display = 'none';
+                deferredPrompt = null;
+            }
+        }
+
+        // --- 3. تسجيل الخدمة والتشغيل النهائي ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                console.log('SW Registered');
+            }).catch(err => console.log('SW Error:', err));
+        }
+
+        init(); // تشغيل التطبيق
+    </script>
+</body>
+</html>
