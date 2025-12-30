@@ -556,9 +556,31 @@ function askNotificationPermission() {
 }
 
 // استدعاء الدالة عند تحميل الموقع
-window.addEventListener('load', () => {
-    askNotificationPermission();
-});
-    </script>
-</body>
-</html>
+    <script>
+    // 1. تسجيل الـ Service Worker وتشغيل التنبيهات
+    if ('serviceWorker' in navigator && 'Notification' in window) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('Service Worker Registered');
+
+                    // 2. طلب إذن التنبيهات
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            console.log('تم السماح بالتنبيهات');
+                            
+                            // 3. تجربة تنبيه وهمي بعد 5 ثواني للتأكد
+                            setTimeout(() => {
+                                registration.showNotification("تذكير تجريبي", {
+                                    body: "نظام التنبيهات يعمل بنجاح! ✅",
+                                    icon: "https://cdn-icons-png.flaticon.com/512/2805/2805355.png",
+                                    vibrate: [200, 100, 200]
+                                });
+                            }, 5000);
+                        }
+                    });
+                })
+                .catch(err => console.log('Service Worker Error:', err));
+        });
+    }
+</script>
