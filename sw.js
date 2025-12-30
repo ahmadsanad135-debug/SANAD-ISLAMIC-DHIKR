@@ -1,4 +1,4 @@
-const cacheName = 'azkar-v7-final';
+const cacheName = 'azkar-v8-final';
 const assets = [
   '/',
   '/index.html',
