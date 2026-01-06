@@ -4,7 +4,7 @@ const assets = [
   '/index.html',
   '/dhikr-data.js',
   '/manifest.json',
-  '/icon.png' // تأكد من وجود أيقونة بهذا الاسم أو استبدلها برابط
+  '/icon.png' 
 ];
 
 // 1. التثبيت والحفظ في الكاش
@@ -24,20 +24,23 @@ self.addEventListener('activate', e => {
       }));
     })
   );
+  return self.clients.claim();
 });
 
-// 3. استقبال التنبيهات المجدولة (Push) أو اليدوية
-self.addEventListener('show-notification', (event) => {
-    const title = event.data.title;
-    const options = {
-        body: event.data.body,
-        icon: '/icon.png',
-        badge: '/icon.png',
-        vibrate: [200, 100, 200],
-        tag: event.data.tag, // لمنع تكرار نفس التنبيه
-        renotify: true
-    };
-    self.registration.showNotification(title, options);
+// 3. استقبال الأوامر من المتصفح (التصحيح هنا)
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+        const options = {
+            body: event.data.body,
+            icon: '/icon.png',
+            badge: '/icon.png',
+            vibrate: [200, 100, 200],
+            tag: 'azkar-reminder', 
+            renotify: true,
+            data: { url: '/' }
+        };
+        self.registration.showNotification(event.data.title, options);
+    }
 });
 
 // 4. استراتيجية الكاش (العمل بدون إنترنت)
@@ -51,6 +54,11 @@ self.addEventListener('fetch', e => {
 self.addEventListener('notificationclick', e => {
     e.notification.close();
     e.waitUntil(
-        clients.openWindow('/')
+        clients.matchAll({ type: 'window' }).then(clientList => {
+            for (const client of clientList) {
+                if (client.url === '/' && 'focus' in client) return client.focus();
+            }
+            if (clients.openWindow) return clients.openWindow('/');
+        })
     );
 });
