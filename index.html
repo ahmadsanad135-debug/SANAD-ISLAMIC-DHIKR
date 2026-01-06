@@ -463,12 +463,22 @@
         }
 
         function sendNotification(title, body) {
-            if (Notification.permission === "granted" && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification(title, { body: body, vibrate: [200, 100, 200] });
-                });
-            }
-        }
+    if (Notification.permission === "granted") {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification(title, {
+                body: body,
+                icon: 'icon.png',  // تأكد من وجود الصورة في مجلدك
+                badge: 'icon.png', // أيقونة صغيرة تظهر في شريط الإشعارات
+                vibrate: [200, 100, 200],
+                tag: 'azkar-notif',
+                renotify: true
+            });
+        }).catch(err => console.error("Service Worker not ready:", err));
+    } else {
+        console.warn("إذن التنبيهات غير ممنوح.");
+    }
+}
+    
 
         setInterval(checkTime, 60000);
         checkTime();
