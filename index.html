@@ -443,24 +443,33 @@
         }
 
         function checkTime() {
-            checkDailyReset();
-            const now = new Date();
-            const currentString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-            const savedMorning = localStorage.getItem('morning_time');
-            const savedEvening = localStorage.getItem('evening_time');
-            const lastNotified = localStorage.getItem('last_notified_time');
+    // 1. الحصول على الوقت والتاريخ الحاليين
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); // النتيجة مثلاً: 18:30
+    const todayDate = now.toLocaleDateString(); // النتيجة مثلاً: 08/01/2026
 
-            if (lastNotified === currentString) return;
+    // 2. جلب الأوقات المحفوظة من الإعدادات
+    const savedMorningTime = localStorage.getItem('morning_time');
+    const savedEveningTime = localStorage.getItem('evening_time');
 
-            if (savedMorning && currentString === savedMorning) {
-                sendNotification("☀️ أذكار الصباح", "حان وقت الأذكار.. أصبحنا وأصبح الملك لله");
-                localStorage.setItem('last_notified_time', currentString);
-            }
-            if (savedEvening && currentString === savedEvening) {
-                sendNotification("🌙 أذكار المساء", "حان وقت الأذكار.. أمسينا وأمسى الملك لله");
-                localStorage.setItem('last_notified_time', currentString);
-            }
-        }
+    // 3. جلب تاريخ آخر تنبيه تم إرساله (للصباح والمساء بشكل منفصل)
+    const lastMorningDate = localStorage.getItem('last_morning_date');
+    const lastEveningDate = localStorage.getItem('last_evening_date');
+
+    // --- منطق أذكار الصباح ---
+    // الشرط: (يوجد وقت محفوظ) و (الوقت الحالي يطابق وقت الصباح) و (لم نرسل تنبيه صباحي بهذا التاريخ)
+    if (savedMorningTime && currentTime === savedMorningTime && lastMorningDate !== todayDate) {
+        sendNotification("☀️ أذكار الصباح", "حان وقت الأذكار.. أصبحنا وأصبح الملك لله");
+        localStorage.setItem('last_morning_date', todayDate); // نسجل أننا أرسلنا تنبيه الصباح لهذا اليوم
+    }
+
+    // --- منطق أذكار المساء ---
+    // الشرط: (يوجد وقت محفوظ) و (الوقت الحالي يطابق وقت المساء) و (لم نرسل تنبيه مسائي بهذا التاريخ)
+    if (savedEveningTime && currentTime === savedEveningTime && lastEveningDate !== todayDate) {
+        sendNotification("🌙 أذكار المساء", "حان وقت الأذكار.. أمسينا وأمسى الملك لله");
+        localStorage.setItem('last_evening_date', todayDate); // نسجل أننا أرسلنا تنبيه المساء لهذا اليوم
+    }
+}
 
         function sendNotification(title, body) {
     if (Notification.permission === "granted") {
