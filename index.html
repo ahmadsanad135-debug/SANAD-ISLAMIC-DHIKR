@@ -474,21 +474,85 @@
         navigator.serviceWorker.ready.then(registration => {
             registration.showNotification(title, {
                 body: body,
-                icon: 'icon.png',  // تأكد من وجود الصورة في مجلدك
-                badge: 'icon.png', // أيقونة صغيرة تظهر في شريط الإشعارات
+// --- 5. التنبيهات اليومية الدقيقة ---
+const modal = document.getElementById('settings-modal');
+const morningInput = document.getElementById('morning-time-input');
+const eveningInput = document.getElementById('evening-time-input');
+
+function openSettings() {
+    morningInput.value = localStorage.getItem('morning_time') || '';
+    eveningInput.value = localStorage.getItem('evening_time') || '';
+    modal.style.display = 'flex';
+}
+
+function closeSettings() { modal.style.display = 'none'; }
+
+function saveReminders() {
+    const mTime = morningInput.value;
+    const eTime = eveningInput.value;
+    if (mTime) localStorage.setItem('morning_time', mTime);
+    if (eTime) localStorage.setItem('evening_time', eTime);
+
+    if ("Notification" in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                alert("✅ تم حفظ وتفعيل التنبيهات بنجاح!");
+                closeSettings();
+                checkTime(); // فحص فوري بعد الحفظ
+            } else { 
+                alert("⚠️ يرجى السماح بالإشعارات من إعدادات المتصفح لتعمل التنبيهات."); 
+            }
+        });
+    } else { 
+        alert("متصفحك لا يدعم التنبيهات."); 
+        closeSettings(); 
+    }
+}
+
+function checkTime() {
+    const now = new Date();
+    // الحصول على الوقت بصيغة 24 ساعة (مثال: 08:30)
+    const currentString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+    const todayDate = now.toLocaleDateString('en-US'); // تاريخ اليوم
+
+    const savedMorning = localStorage.getItem('morning_time');
+    const savedEvening = localStorage.getItem('evening_time');
+
+    // فحص أذكار الصباح
+    if (savedMorning && currentString === savedMorning) {
+        if (localStorage.getItem('last_morning_date') !== todayDate) {
+            sendNotification("☀️ أذكار الصباح", "حان وقت الأذكار.. أصبحنا وأصبح الملك لله");
+            localStorage.setItem('last_morning_date', todayDate); // حفظ التاريخ لمنع التكرار اليوم
+        }
+    }
+
+    // فحص أذكار المساء
+    if (savedEvening && currentString === savedEvening) {
+        if (localStorage.getItem('last_evening_date') !== todayDate) {
+            sendNotification("🌙 أذكار المساء", "حان وقت الأذكار.. أمسينا وأمسى الملك لله");
+            localStorage.setItem('last_evening_date', todayDate); // حفظ التاريخ لمنع التكرار اليوم
+        }
+    }
+}
+
+function sendNotification(title, body) {
+    if (Notification.permission === "granted") {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification(title, {
+                body: body,
+                icon: 'icon.png',
+                badge: 'icon.png',
                 vibrate: [200, 100, 200],
                 tag: 'azkar-notif',
                 renotify: true
             });
-        }).catch(err => console.error("Service Worker not ready:", err));
-    } else {
-        console.warn("إذن التنبيهات غير ممنوح.");
+        });
     }
 }
-    
 
-        setInterval(checkTime, 60000);
-        checkTime();
+// تشغيل الفحص كل 30 ثانية لضمان عدم تفويت الدقيقة المحددة
+setInterval(checkTime, 30000);
+checkTime(); // تشغيل أولي فور فتح التطبيق
 
         // --- 6. التثبيت (PWA) ---
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
