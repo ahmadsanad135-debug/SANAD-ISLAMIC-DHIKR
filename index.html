@@ -197,21 +197,25 @@
 
         .settings-content h3 { margin-bottom: 25px; color: var(--primary); }
 
+        .time-input-group { margin-bottom: 20px; text-align: right; }
+        .time-input-group label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.9rem; }
         .time-input-group input {
-    width: 100%; 
-    padding: 12px; 
-    border: 2px solid var(--accent); /* إطار ذهبي لتمييز الحقل */
-    background: #ffffff !important; /* خلفية بيضاء دائماً */
-    color: #000000 !important;      /* نص أسود دائماً */
-    direction: ltr;                 /* اتجاه إنجليزي */
-    color-scheme: light;            /* منع المتصفح من تغميقه */
-}
-        .save-btn {
-            background: var(--primary); color: white; border: none; padding: 12px 30px;
-            border-radius: 15px; font-weight: bold; width: 100%; cursor: pointer;
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            background: #ffffff;
+            color: #000000;
+            direction: ltr;
+            color-scheme: light;
         }
 
-        .close-modal { margin-top: 15px; background: transparent; border: none; color: var(--text-sec); cursor: pointer; }
+        .save-btn {
+            background: var(--primary); color: white; border: none; padding: 12px 30px;
+            border-radius: 15px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 10px;
+        }
+
+        .close-modal { background: transparent; border: none; color: var(--text-sec); cursor: pointer; }
 
     </style>
 </head>
@@ -233,7 +237,7 @@
 
     <div id="settings-modal" class="settings-modal">
         <div class="settings-content">
-            <h3>⏰ ضبط التذكير</h3>
+            <h3>⏰ ضبط التذكير اليومي</h3>
             <div class="time-input-group">
                 <label>☀️ موعد أذكار الصباح</label>
                 <input type="time" id="morning-time-input">
@@ -268,7 +272,6 @@
 
     <script>
         // المتغيرات العامة
-        const APP_VERSION = 'v8.0';
         const grid = document.getElementById('categories-grid');
         const dhikrPage = document.getElementById('dhikr-page');
         const homePage = document.getElementById('home-page');
@@ -289,7 +292,6 @@
                     if (key.startsWith('dhikr-')) localStorage.removeItem(key);
                 });
                 localStorage.setItem('last_reset_date', todayKey);
-                if (lastResetDate) location.reload();
             }
         }
         checkDailyReset();
@@ -312,35 +314,32 @@
 
         // --- 3. التشغيل الأولي (Init) ---
         function init() {
-            // التحقق من تحميل البيانات
             if (typeof dhikrData === 'undefined') {
-                document.getElementById('loading-msg').innerHTML = '❌ خطأ: لم يتم العثور على ملف البيانات (dhikr-data.js).<br>تأكد من وجود الملف في نفس المجلد ومن اسمه الصحيح.';
-                document.getElementById('loading-msg').style.color = 'red';
+                document.getElementById('loading-msg').innerHTML = '❌ خطأ في تحميل dhikr-data.js';
                 return;
             }
-
             document.getElementById('loading-msg').style.display = 'none';
             grid.innerHTML = '';
             
             Object.keys(dhikrData).forEach(category => {
-                const count = dhikrData[category].length;
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `<svg class="card-icon" viewBox="0 0 24 24">${getCategoryIcon(category)}</svg><h3>${category}</h3><span>${count} ذكر</span>`;
+                card.innerHTML = `<svg class="card-icon" viewBox="0 0 24 24">${getCategoryIcon(category)}</svg><h3>${category}</h3><span>${dhikrData[category].length} ذكر</span>`;
                 card.onclick = () => openCategory(category);
                 grid.appendChild(card);
             });
-            
             if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
+            
+            // تشغيل فحص الوقت
+            setInterval(checkTime, 30000);
+            checkTime();
         }
 
-        // --- 4. وظائف الواجهة ---
+        // --- 4. وظائف التطبيق الرئيسية ---
         function toggleTheme() {
-            if(document.body.getAttribute('data-theme') === 'dark') {
-                document.body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light');
-            } else {
-                document.body.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark');
-            }
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            isDark ? document.body.removeAttribute('data-theme') : document.body.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
         }
 
         function openCategory(category) {
@@ -351,8 +350,6 @@
 
         function renderDhikrList(category) {
             dhikrList.innerHTML = '';
-            if (!dhikrData[category]) return;
-
             dhikrData[category].forEach((item, idx) => {
                 const saved = getSavedCount(category, idx);
                 const isCompleted = saved >= item.count;
@@ -364,7 +361,6 @@
                     <div class="dhikr-text">${item.text}</div>
                     <div class="dhikr-controls">
                         <span class="count-badge" id="badge-${idx}">${saved} / ${item.count}</span>
-                        <div style="font-size:0.8rem; color:var(--text-sec)">اضغط للعد</div>
                     </div>`;
                 dhikrList.appendChild(div);
             });
@@ -377,7 +373,7 @@
                 saveCount(category, idx, current);
                 document.getElementById(`badge-${idx}`).innerText = `${current} / ${max}`;
                 
-                // التأثير البصري
+                // Ripple effect
                 const rect = element.getBoundingClientRect();
                 const circle = document.createElement('div');
                 circle.className = 'click-effect';
@@ -387,8 +383,8 @@
                 setTimeout(() => circle.remove(), 600);
 
                 if (current >= max) {
-                    if("vibrate" in navigator) navigator.vibrate([50, 50, 50]);
                     document.getElementById(`card-${idx}`).classList.add('completed');
+                    if("vibrate" in navigator) navigator.vibrate([50, 50, 50]);
                 } else {
                     if("vibrate" in navigator) navigator.vibrate(30);
                 }
@@ -400,17 +396,16 @@
         function saveCount(cat, idx, val) { localStorage.setItem(`dhikr-${cat}-${idx}`, val); }
 
         function updateProgress(category) {
-            if (!dhikrData[category]) return;
             const total = dhikrData[category].length;
             let done = 0;
-            dhikrData[category].forEach((item, idx) => { if(getSavedCount(category, idx) >= item.count) done++; });
-            const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+            dhikrData[category].forEach((_, idx) => { if(getSavedCount(category, idx) >= dhikrData[category][idx].count) done++; });
+            const percent = Math.round((done / total) * 100);
             progressFill.style.width = `${percent}%`; progressText.innerText = `${percent}%`;
         }
 
         function showHome() { homePage.style.display = 'block'; dhikrPage.style.display = 'none'; }
 
-        // --- 5. التنبيهات ---
+        // --- 5. نظام التنبيهات الذكي (Daily Persistent Notifications) ---
         const modal = document.getElementById('settings-modal');
         const morningInput = document.getElementById('morning-time-input');
         const eveningInput = document.getElementById('evening-time-input');
@@ -432,130 +427,57 @@
             if ("Notification" in window) {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        if (navigator.serviceWorker.controller) {
-                            navigator.serviceWorker.controller.postMessage({ type: 'UPDATE_REMINDERS', morning: mTime, evening: eTime });
-                        }
-                        alert("✅ تم تفعيل التنبيهات بنجاح!");
+                        alert("✅ تم تفعيل التذكير اليومي بنجاح!");
                         closeSettings();
-                    } else { alert("⚠️ يرجى السماح بالإشعارات من المتصفح."); }
+                        checkTime();
+                    } else {
+                        alert("⚠️ يرجى السماح بالإشعارات ليعمل التذكير.");
+                    }
                 });
-            } else { alert("متصفحك لا يدعم التنبيهات."); closeSettings(); }
+            }
         }
 
         function checkTime() {
-    const now = new Date();
-    // صيغة الوقت (مثلاً 08:00)
-    const currentString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-    // صيغة التاريخ (مثلاً 2024-05-20)
-    const todayDate = now.toISOString().split('T')[0]; 
+            const now = new Date();
+            const currentString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+            const todayDate = now.toLocaleDateString('en-US');
 
-    const savedMorning = localStorage.getItem('morning_time');
-    const savedEvening = localStorage.getItem('evening_time');
+            const savedMorning = localStorage.getItem('morning_time');
+            const savedEvening = localStorage.getItem('evening_time');
 
-    // تذكير الصباح
-    if (savedMorning === currentString) {
-        if (localStorage.getItem('last_morning_date') !== todayDate) {
-            sendNotification("☀️ أذكار الصباح", "حان وقت الأذكار.. أصبحنا وأصبح الملك لله");
-            localStorage.setItem('last_morning_date', todayDate);
+            if (savedMorning && currentString === savedMorning) {
+                if (localStorage.getItem('last_morning_date') !== todayDate) {
+                    sendNotification("☀️ أذكار الصباح", "حان وقت الأذكار.. أصبحنا وأصبح الملك لله");
+                    localStorage.setItem('last_morning_date', todayDate);
+                }
+            }
+
+            if (savedEvening && currentString === savedEvening) {
+                if (localStorage.getItem('last_evening_date') !== todayDate) {
+                    sendNotification("🌙 أذكار المساء", "حان وقت الأذكار.. أمسينا وأمسى الملك لله");
+                    localStorage.setItem('last_evening_date', todayDate);
+                }
+            }
         }
-    }
-
-    // تذكير المساء
-    if (savedEvening === currentString) {
-        if (localStorage.getItem('last_evening_date') !== todayDate) {
-            sendNotification("🌙 أذكار المساء", "حان وقت الأذكار.. أمسينا وأمسى الملك لله");
-            localStorage.setItem('last_evening_date', todayDate);
-        }
-    }
-}
 
         function sendNotification(title, body) {
-    if (Notification.permission === "granted") {
-        navigator.serviceWorker.ready.then(registration => {
-            registration.showNotification(title, {
-                body: body,
-// --- 5. التنبيهات اليومية الدقيقة ---
-const modal = document.getElementById('settings-modal');
-const morningInput = document.getElementById('morning-time-input');
-const eveningInput = document.getElementById('evening-time-input');
-
-function openSettings() {
-    morningInput.value = localStorage.getItem('morning_time') || '';
-    eveningInput.value = localStorage.getItem('evening_time') || '';
-    modal.style.display = 'flex';
-}
-
-function closeSettings() { modal.style.display = 'none'; }
-
-function saveReminders() {
-    const mTime = morningInput.value;
-    const eTime = eveningInput.value;
-    if (mTime) localStorage.setItem('morning_time', mTime);
-    if (eTime) localStorage.setItem('evening_time', eTime);
-
-    if ("Notification" in window) {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                alert("✅ تم حفظ وتفعيل التنبيهات بنجاح!");
-                closeSettings();
-                checkTime(); // فحص فوري بعد الحفظ
-            } else { 
-                alert("⚠️ يرجى السماح بالإشعارات من إعدادات المتصفح لتعمل التنبيهات."); 
+            if (Notification.permission === "granted") {
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification(title, {
+                        body: body,
+                        icon: 'icon.png',
+                        vibrate: [200, 100, 200],
+                        tag: 'azkar-notif'
+                    });
+                });
             }
-        });
-    } else { 
-        alert("متصفحك لا يدعم التنبيهات."); 
-        closeSettings(); 
-    }
-}
-
-function checkTime() {
-    const now = new Date();
-    // الحصول على الوقت بصيغة 24 ساعة (مثال: 08:30)
-    const currentString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
-    const todayDate = now.toLocaleDateString('en-US'); // تاريخ اليوم
-
-    const savedMorning = localStorage.getItem('morning_time');
-    const savedEvening = localStorage.getItem('evening_time');
-
-    // فحص أذكار الصباح
-    if (savedMorning && currentString === savedMorning) {
-        if (localStorage.getItem('last_morning_date') !== todayDate) {
-            sendNotification("☀️ أذكار الصباح", "حان وقت الأذكار.. أصبحنا وأصبح الملك لله");
-            localStorage.setItem('last_morning_date', todayDate); // حفظ التاريخ لمنع التكرار اليوم
         }
-    }
 
-    // فحص أذكار المساء
-    if (savedEvening && currentString === savedEvening) {
-        if (localStorage.getItem('last_evening_date') !== todayDate) {
-            sendNotification("🌙 أذكار المساء", "حان وقت الأذكار.. أمسينا وأمسى الملك لله");
-            localStorage.setItem('last_evening_date', todayDate); // حفظ التاريخ لمنع التكرار اليوم
-        }
-    }
-}
-
-function sendNotification(title, body) {
-    if (Notification.permission === "granted") {
-        navigator.serviceWorker.ready.then(registration => {
-            registration.showNotification(title, {
-                body: body,
-                icon: 'icon.png',
-                badge: 'icon.png',
-                vibrate: [200, 100, 200],
-                tag: 'azkar-notif',
-                renotify: true
-            });
+        // --- 6. PWA ---
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
         });
-    }
-}
 
-// تشغيل الفحص كل 30 ثانية لضمان عدم تفويت الدقيقة المحددة
-setInterval(checkTime, 30000);
-checkTime(); // تشغيل أولي فور فتح التطبيق
-
-        // --- 6. التثبيت (PWA) ---
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
         async function installApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
@@ -564,13 +486,13 @@ checkTime(); // تشغيل أولي فور فتح التطبيق
                 deferredPrompt = null;
             }
         }
+
         if ('serviceWorker' in navigator) {
-            // تم تعديل اسم الملف هنا ليكون sw.js
             navigator.serviceWorker.register('sw.js').catch(console.error);
         }
 
-        // تشغيل التطبيق
         init();
     </script>
 </body>
 </html>
+ 
