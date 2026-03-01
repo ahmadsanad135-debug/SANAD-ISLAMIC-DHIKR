@@ -2,265 +2,75 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f3d0f">
-    <meta name="description" content="تطبيق أذكار المسلم - حصن المسلم الشامل">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أذكار المسلم</title>
-    <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #0f3d0f;
-            --accent: #d4af37;
-            --bg: #f5f5f5;
-            --card: #ffffff;
-            --text: #333333;
-            --text-sec: #666666;
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        [data-theme="dark"] {
-            --primary: #1a4d1a;
-            --accent: #f0c445;
-            --bg: #121212;
-            --card: #1e1e1e;
-            --text: #e0e0e0;
-            --text-sec: #aaaaaa;
-            --shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; padding-bottom: 80px; }
+        :root { --primary: #0f3d0f; --accent: #d4af37; --bg: #f5f5f5; --card: #ffffff; --text: #333; --shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        [data-theme="dark"] { --primary: #1a4d1a; --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+        body { background: var(--bg); color: var(--text); transition: 0.3s; padding-bottom: 20px; }
 
         header {
             background: linear-gradient(135deg, var(--primary), #0a290a);
-            color: white;
-            padding: 20px;
-            border-radius: 0 0 30px 30px;
-            box-shadow: var(--shadow);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            color: white; padding: 15px 20px; border-radius: 0 0 25px 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow);
         }
 
-        h1 { font-size: 1.5rem; font-weight: 700; }
-        
-        .header-buttons { display: flex; gap: 10px; }
+        .theme-btn { background: rgba(255,255,255,0.1); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
 
-        .theme-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        
-        .theme-btn:active { transform: scale(0.9); }
-
-        .container { padding: 20px; max-width: 800px; margin: 0 auto; }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-        }
+        .container { padding: 20px; max-width: 800px; margin: auto; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
 
         .card {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 2px solid transparent;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            background: var(--card); padding: 20px; border-radius: 18px; text-align: center;
+            box-shadow: var(--shadow); cursor: pointer; transition: 0.2s; border: 2px solid transparent;
         }
-
-        .card:active { transform: scale(0.96); }
+        .card:active { transform: scale(0.95); }
         .card:hover { border-color: var(--accent); }
+        .card svg { width: 40px; height: 40px; fill: var(--primary); margin-bottom: 10px; }
+        [data-theme="dark"] .card svg { fill: var(--accent); }
 
-        .card-icon { width: 50px; height: 50px; fill: var(--primary); margin-bottom: 5px; }
-        [data-theme="dark"] .card-icon { fill: var(--accent); }
+        #dhikr-page { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 200; overflow-y: auto; padding: 20px; }
+        .page-header { display: flex; align-items: center; margin-bottom: 15px; gap: 15px; }
+        .back-btn { background: var(--card); border: none; padding: 10px; border-radius: 12px; color: var(--primary); width: 45px; height: 45px; cursor: pointer; font-size: 1.2rem; }
 
-        .card h3 { font-size: 1rem; color: var(--text); }
-        .card span { font-size: 0.8rem; color: var(--text-sec); }
-
-        #dhikr-page {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg);
-            z-index: 200;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .page-header { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; }
-
-        .back-btn {
-            background: var(--card);
-            border: none;
-            padding: 10px;
-            border-radius: 12px;
-            color: var(--primary);
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            font-size: 1.2rem;
-            width: 45px; height: 45px;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 10px;
-            margin: 10px 0 20px;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+        .progress-bar { height: 6px; background: rgba(0,0,0,0.1); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: 0.3s; }
 
         .dhikr-card {
-            background: var(--card);
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            border-right: 4px solid var(--primary);
-            transition: 0.3s;
+            background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 15px;
+            box-shadow: var(--shadow); border-right: 5px solid var(--primary); position: relative;
         }
-
-        .dhikr-card.completed { opacity: 0.6; border-color: #4CAF50; background: rgba(76, 175, 80, 0.05); }
-
-        .dhikr-text { font-family: 'Amiri', serif; font-size: 1.4rem; line-height: 1.8; margin-bottom: 20px; }
-
-        .dhikr-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-
-        .count-badge {
-            background: var(--primary);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
+        .dhikr-card.completed { opacity: 0.6; border-color: #4CAF50; }
+        .dhikr-text { font-family: 'Amiri', serif; font-size: 1.3rem; line-height: 1.7; margin-bottom: 15px; }
+        .count-badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: 15px; font-size: 0.9rem; font-weight: bold; }
         
-        .tap-area { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; cursor: pointer; }
-        
-        #install-btn {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--accent); color: #000; padding: 12px 25px; border-radius: 30px;
-            border: none; font-weight: bold; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-            z-index: 300; display: none; animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
-            40% {transform: translateX(-50%) translateY(-10px);}
-            60% {transform: translateX(-50%) translateY(-5px);}
-        }
-        
-        .click-effect {
-            position: absolute; background: rgba(212, 175, 55, 0.3); border-radius: 50%;
-            transform: scale(0); animation: ripple 0.6s linear; pointer-events: none;
-        }
-
+        .tap-area { position: absolute; inset: 0; z-index: 1; cursor: pointer; }
+        .click-effect { position: absolute; background: rgba(212, 175, 55, 0.2); border-radius: 50%; transform: scale(0); animation: ripple 0.4s linear; pointer-events: none; }
         @keyframes ripple { to { transform: scale(4); opacity: 0; } }
 
-        /* نافذة التنبيهات */
-        .settings-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000;
-            justify-content: center; align-items: center;
-        }
-
-        .settings-content {
-            background: var(--card); padding: 30px; border-radius: 25px;
-            width: 90%; max-width: 350px; box-shadow: var(--shadow); text-align: center;
-        }
-
-        .settings-content h3 { margin-bottom: 25px; color: var(--primary); }
-
-        .time-input-group { margin-bottom: 20px; text-align: right; }
-        .time-input-group label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.9rem; }
-        .time-input-group input {
-            width: 100%; 
-            padding: 12px; 
-            border: 2px solid var(--accent);
-            border-radius: 12px;
-            background: #ffffff;
-            color: #000000;
-            direction: ltr;
-            color-scheme: light;
-        }
-
-        .save-btn {
-            background: var(--primary); color: white; border: none; padding: 12px 30px;
-            border-radius: 15px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 10px;
-        }
-
-        .close-modal { background: transparent; border: none; color: var(--text-sec); cursor: pointer; }
-
+        #install-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--accent); border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; display: none; z-index: 300; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>أذكار المسلم</h1>
-        <div class="header-buttons">
-            <button class="theme-btn" onclick="openSettings()" aria-label="الإعدادات">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
-                </svg>
-            </button>
-            <button class="theme-btn" onclick="toggleTheme()" aria-label="تغيير المظهر">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-            </button>
-        </div>
+        <button class="theme-btn" onclick="toggleTheme()">🌓</button>
     </header>
-
-    <div id="settings-modal" class="settings-modal">
-        <div class="settings-content">
-            <h3>⏰ ضبط التذكير اليومي</h3>
-            <div class="time-input-group">
-                <label>☀️ موعد أذكار الصباح</label>
-                <input type="time" id="morning-time-input">
-            </div>
-            <div class="time-input-group">
-                <label>🌙 موعد أذكار المساء</label>
-                <input type="time" id="evening-time-input">
-            </div>
-            <button class="save-btn" onclick="saveReminders()">حفظ وتفعيل</button>
-            <button class="close-modal" onclick="closeSettings()">إغلاق</button>
-        </div>
-    </div>
 
     <div class="container" id="home-page">
         <div class="grid" id="categories-grid"></div>
-        <p id="loading-msg" style="text-align:center; margin-top:20px;">جاري تحميل الأذكار...</p>
     </div>
 
     <div id="dhikr-page">
         <div class="page-header">
             <button class="back-btn" onclick="showHome()">➜</button>
-            <h2 id="page-title">العنوان</h2>
-            <span id="progress-text" style="margin-right:auto; font-weight:bold; color:var(--primary)">0%</span>
+            <h2 id="page-title"></h2>
+            <span id="progress-text" style="margin-right:auto; font-weight:bold;">0%</span>
         </div>
         <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
         <div id="dhikr-list"></div>
@@ -269,227 +79,94 @@
     <button id="install-btn" onclick="installApp()">تثبيت التطبيق ⬇</button>
 
     <script src="dhikr-data.js"></script>
-
     <script>
-        // المتغيرات العامة
-        const grid = document.getElementById('categories-grid');
-        const dhikrPage = document.getElementById('dhikr-page');
-        const homePage = document.getElementById('home-page');
-        const dhikrList = document.getElementById('dhikr-list');
-        const pageTitle = document.getElementById('page-title');
-        const progressFill = document.getElementById('progress-fill');
-        const progressText = document.getElementById('progress-text');
-        const installBtn = document.getElementById('install-btn');
+        const $ = id => document.getElementById(id);
         let deferredPrompt;
 
-        // --- 1. إدارة التجديد التلقائي ---
-        function checkDailyReset() {
-            const now = new Date();
-            const todayKey = new Date(now.getTime() - (4 * 60 * 60 * 1000)).toLocaleDateString();
-            const lastResetDate = localStorage.getItem('last_reset_date');
-            if (lastResetDate !== todayKey) {
-                Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith('dhikr-')) localStorage.removeItem(key);
-                });
-                localStorage.setItem('last_reset_date', todayKey);
+        // إعادة ضبط الأذكار يومياً
+        const checkReset = () => {
+            const today = new Date().toLocaleDateString();
+            if (localStorage.getItem('last_reset') !== today) {
+                Object.keys(localStorage).forEach(k => k.startsWith('d-') && localStorage.removeItem(k));
+                localStorage.setItem('last_reset', today);
             }
-        }
-        checkDailyReset();
+        };
 
-        // --- 2. أيقونات الأذكار ---
-        function getCategoryIcon(name) {
-            const icons = {
-                sun: '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>',
-                moon: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>',
-                prayer: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>',
-                sleep: '<path d="M20,12c0-4.42-3.58-8-8-8c-0.57,0-1.13,0.06-1.68,0.16C12.78,4.72,14.5,7.12,14.5,10 c0,4.24-3.32,7.7-7.5,7.95C7.57,17.98,8.12,18,8.68,18C13.1,18,16.68,14.42,16.68,10c0-0.41-0.03-0.81-0.09-1.2 C18.52,9.88,20,10.87,20,12z"/>',
-                hands: '<path d="M18.5 13c-1.38 0-2.5 1.12-2.5 2.5v4.5c0 .28.22.5.5.5s.5-.22.5-.5V15.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v4.5c0 2.76-2.24 5-5 5-2.76 0-5-2.24-5-5v-5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5.5c0 .28.22.5.5.5s.5-.22.5-.5v-4.5c0-1.38-1.12-2.5-2.5-2.5-1.38 0-2.5 1.12-2.5 2.5v5.5c0 3.87 3.13 7 7 7s7-3.13 7-7v-5.5c0-1.38-1.12-2.5-2.5-2.5z"/>'
-            };
-            if (name.includes('الصباح')) return icons.sun;
-            if (name.includes('المساء')) return icons.moon;
-            if (name.includes('النوم')) return icons.sleep;
-            if (name.includes('الصلاة') || name.includes('تسابيح') || name.includes('مسجد') || name.includes('وضوء')) return icons.prayer;
-            return icons.hands;
-        }
+        const getIcon = (n) => {
+            if (n.includes('الصباح')) return `<path d="M12 7V3M5 12H1m18 0h4m-5.3-6.7l2.8-2.8M6.3 17.7l-2.8 2.8M17.7 17.7l2.8 2.8M6.3 6.3l-2.8-2.8M12 18a6 6 0 100-12 6 6 0 000 12z"/>`;
+            if (n.includes('المساء')) return `<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>`;
+            return `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>`;
+        };
 
-        // --- 3. التشغيل الأولي (Init) ---
         function init() {
-            if (typeof dhikrData === 'undefined') {
-                document.getElementById('loading-msg').innerHTML = '❌ خطأ في تحميل dhikr-data.js';
-                return;
-            }
-            document.getElementById('loading-msg').style.display = 'none';
-            grid.innerHTML = '';
-            
-            Object.keys(dhikrData).forEach(category => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `<svg class="card-icon" viewBox="0 0 24 24">${getCategoryIcon(category)}</svg><h3>${category}</h3><span>${dhikrData[category].length} ذكر</span>`;
-                card.onclick = () => openCategory(category);
-                grid.appendChild(card);
-            });
-            if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
-            
-            // تشغيل فحص الوقت
-            setInterval(checkTime, 30000);
-            checkTime();
+            checkReset();
+            $('categories-grid').innerHTML = Object.keys(dhikrData).map(cat => `
+                <div class="card" onclick="openCat('${cat}')">
+                    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">${getIcon(cat)}</svg>
+                    <h3>${cat}</h3>
+                    <small>${dhikrData[cat].length} ذكر</small>
+                </div>
+            `).join('');
+            if(localStorage.getItem('dark') === '1') document.body.setAttribute('data-theme', 'dark');
         }
 
-        // --- 4. وظائف التطبيق الرئيسية ---
         function toggleTheme() {
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            const isDark = document.body.hasAttribute('data-theme');
             isDark ? document.body.removeAttribute('data-theme') : document.body.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('dark', isDark ? '0' : '1');
         }
 
-        function openCategory(category) {
-            homePage.style.display = 'none'; dhikrPage.style.display = 'block';
-            pageTitle.innerText = category; renderDhikrList(category);
-            updateProgress(category); window.scrollTo(0,0);
+        function openCat(cat) {
+            $('home-page').style.display = 'none';
+            $('dhikr-page').style.display = 'block';
+            $('page-title').innerText = cat;
+            renderList(cat);
+            updateProgress(cat);
         }
 
-        function renderDhikrList(category) {
-            dhikrList.innerHTML = '';
-            dhikrData[category].forEach((item, idx) => {
-                const saved = getSavedCount(category, idx);
-                const isCompleted = saved >= item.count;
-                const div = document.createElement('div');
-                div.className = `dhikr-card ${isCompleted ? 'completed' : ''}`;
-                div.id = `card-${idx}`;
-                div.innerHTML = `
-                    <div class="tap-area" onclick="incrementDhikr('${category}', ${idx}, ${item.count}, this, event)"></div>
+        function renderList(cat) {
+            $('dhikr-list').innerHTML = dhikrData[cat].map((item, i) => {
+                const count = localStorage.getItem(`d-${cat}-${i}`) || 0;
+                return `
+                <div class="dhikr-card ${count >= item.count ? 'completed' : ''}" id="c-${i}">
+                    <div class="tap-area" onclick="tap('${cat}', ${i}, ${item.count}, event)"></div>
                     <div class="dhikr-text">${item.text}</div>
-                    <div class="dhikr-controls">
-                        <span class="count-badge" id="badge-${idx}">${saved} / ${item.count}</span>
-                    </div>`;
-                dhikrList.appendChild(div);
-            });
+                    <span class="count-badge" id="b-${i}">${count} / ${item.count}</span>
+                </div>`;
+            }).join('');
         }
 
-        function incrementDhikr(category, idx, max, element, event) {
-            let current = getSavedCount(category, idx);
-            if (current < max) {
-                current++;
-                saveCount(category, idx, current);
-                document.getElementById(`badge-${idx}`).innerText = `${current} / ${max}`;
+        function tap(cat, i, max, e) {
+            let n = parseInt(localStorage.getItem(`d-${cat}-${i}`)) || 0;
+            if (n < max) {
+                n++;
+                localStorage.setItem(`d-${cat}-${i}`, n);
+                $(`b-${i}`).innerText = `${n} / ${max}`;
+                if (n >= max) $(`c-${i}`).classList.add('completed');
                 
-                // Ripple effect
-                const rect = element.getBoundingClientRect();
-                const circle = document.createElement('div');
-                circle.className = 'click-effect';
-                circle.style.left = `${event.clientX - rect.left}px`;
-                circle.style.top = `${event.clientY - rect.top}px`;
-                element.parentElement.appendChild(circle);
-                setTimeout(() => circle.remove(), 600);
-
-                if (current >= max) {
-                    document.getElementById(`card-${idx}`).classList.add('completed');
-                    if("vibrate" in navigator) navigator.vibrate([50, 50, 50]);
-                } else {
-                    if("vibrate" in navigator) navigator.vibrate(30);
-                }
-                updateProgress(category);
+                const ripple = document.createElement('div');
+                ripple.className = 'click-effect';
+                ripple.style.left = e.offsetX + 'px'; ripple.style.top = e.offsetY + 'px';
+                e.target.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 400);
+                
+                navigator.vibrate?.(n >= max ? [50, 30, 50] : 30);
+                updateProgress(cat);
             }
         }
 
-        function getSavedCount(cat, idx) { return parseInt(localStorage.getItem(`dhikr-${cat}-${idx}`)) || 0; }
-        function saveCount(cat, idx, val) { localStorage.setItem(`dhikr-${cat}-${idx}`, val); }
-
-        function updateProgress(category) {
-            const total = dhikrData[category].length;
-            let done = 0;
-            dhikrData[category].forEach((_, idx) => { if(getSavedCount(category, idx) >= dhikrData[category][idx].count) done++; });
-            const percent = Math.round((done / total) * 100);
-            progressFill.style.width = `${percent}%`; progressText.innerText = `${percent}%`;
+        function updateProgress(cat) {
+            const total = dhikrData[cat].length;
+            const done = dhikrData[cat].filter((_, i) => (localStorage.getItem(`d-${cat}-${i}`) || 0) >= dhikrData[cat][i].count).length;
+            const p = Math.round((done / total) * 100);
+            $('progress-fill').style.width = p + '%';
+            $('progress-text').innerText = p + '%';
         }
 
-        function showHome() { homePage.style.display = 'block'; dhikrPage.style.display = 'none'; }
+        function showHome() { $('home-page').style.display = 'block'; $('dhikr-page').style.display = 'none'; }
 
-        // --- 5. نظام التنبيهات الذكي (Daily Persistent Notifications) ---
-        const modal = document.getElementById('settings-modal');
-        const morningInput = document.getElementById('morning-time-input');
-        const eveningInput = document.getElementById('evening-time-input');
-
-        function openSettings() {
-            morningInput.value = localStorage.getItem('morning_time') || '';
-            eveningInput.value = localStorage.getItem('evening_time') || '';
-            modal.style.display = 'flex';
-        }
-
-        function closeSettings() { modal.style.display = 'none'; }
-
-        function saveReminders() {
-            const mTime = morningInput.value;
-            const eTime = eveningInput.value;
-            if (mTime) localStorage.setItem('morning_time', mTime);
-            if (eTime) localStorage.setItem('evening_time', eTime);
-
-            if ("Notification" in window) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        alert("✅ تم تفعيل التذكير اليومي بنجاح!");
-                        closeSettings();
-                        checkTime();
-                    } else {
-                        alert("⚠️ يرجى السماح بالإشعارات ليعمل التذكير.");
-                    }
-                });
-            }
-        }
-
-        function checkTime() {
-            const now = new Date();
-            const currentString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
-            const todayDate = now.toLocaleDateString('en-US');
-
-            const savedMorning = localStorage.getItem('morning_time');
-            const savedEvening = localStorage.getItem('evening_time');
-
-            if (savedMorning && currentString === savedMorning) {
-                if (localStorage.getItem('last_morning_date') !== todayDate) {
-                    sendNotification("☀️ أذكار الصباح", "حان وقت الأذكار.. أصبحنا وأصبح الملك لله");
-                    localStorage.setItem('last_morning_date', todayDate);
-                }
-            }
-
-            if (savedEvening && currentString === savedEvening) {
-                if (localStorage.getItem('last_evening_date') !== todayDate) {
-                    sendNotification("🌙 أذكار المساء", "حان وقت الأذكار.. أمسينا وأمسى الملك لله");
-                    localStorage.setItem('last_evening_date', todayDate);
-                }
-            }
-        }
-
-        function sendNotification(title, body) {
-            if (Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, {
-                        body: body,
-                        icon: 'icon.png',
-                        vibrate: [200, 100, 200],
-                        tag: 'azkar-notif'
-                    });
-                });
-            }
-        }
-
-        // --- 6. PWA ---
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
-        });
-
-        async function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') installBtn.style.display = 'none';
-                deferredPrompt = null;
-            }
-        }
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(console.error);
-        }
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; $('install-btn').style.display = 'block'; });
+        async function installApp() { if(deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; $('install-btn').style.display = 'none'; } }
 
         init();
     </script>
