@@ -362,7 +362,7 @@
         init();
     </script>
 
-    <script type="module">
+        <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
@@ -380,21 +380,28 @@
         const messaging = getMessaging(app);
 
         document.getElementById('notify-btn').addEventListener('click', async () => {
+            console.log("محاولة طلب الإذن..."); // للتأكد أن الزر يعمل
             try {
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
+                    // تعديل المسار ليتناسب مع GitHub Pages
+                    const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+                    
                     const token = await getToken(messaging, { 
-                        vapidKey: 'BEZFcMoLv0a7bdH-faz2Jxqza__JZiF1jok68rQbIIbh0GcQyHXxtrJxWy24xzVUinSqMlNl3YLK43d8CSlaiqY' 
+                        vapidKey: 'BEZFcMoLv0a7bdH-faz2Jxqza__JZiF1jok68rQbIIbh0GcQyHXxtrJxWy24xzVUinSqMlNl3YLK43d8CSlaiqY',
+                        serviceWorkerRegistration: registration
                     });
+
                     if (token) {
                         console.log("Token:", token);
-                        alert("تم تفعيل الإشعارات بنجاح! 🌙");
+                        alert("تم التفعيل بنجاح! 🌙");
                     }
                 } else {
-                    alert("يرجى السماح بالإشعارات من إعدادات المتصفح.");
+                    alert("يجب السماح بالإشعارات من إعدادات المتصفح.");
                 }
             } catch (error) {
-                console.error("خطأ في تفعيل الإشعارات:", error);
+                console.error("Error details:", error);
+                alert("حدث خطأ: تأكد من رفع ملف firebase-messaging-sw.js في المستودع");
             }
         });
     </script>
