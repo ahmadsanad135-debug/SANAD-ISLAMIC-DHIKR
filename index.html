@@ -63,6 +63,7 @@
             align-items: center;
             justify-content: center;
             transition: 0.2s;
+            font-size: 1.2rem;
         }
         
         .theme-btn:active { transform: scale(0.9); }
@@ -189,6 +190,7 @@
     <header>
         <h1>أذكار المسلم</h1>
         <div class="header-buttons">
+            <button class="theme-btn" id="notify-btn" aria-label="تفعيل التنبيهات">🔔</button>
             <button class="theme-btn" onclick="toggleTheme()" aria-label="تغيير المظهر">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
             </button>
@@ -352,11 +354,50 @@
             }
         }
 
+        // تسجيل السيرفس وركر الخاص بالأوفلاين
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(console.error);
         }
 
         init();
     </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCsF_k_WR9ScrBC1Nq3hWboiWVm4KEigNM",
+            authDomain: "islamic-dhikr.firebaseapp.com",
+            projectId: "islamic-dhikr",
+            storageBucket: "islamic-dhikr.firebasestorage.app",
+            messagingSenderId: "335914729881",
+            appId: "1:335914729881:web:ab4f5e4c8added6fc65308",
+            measurementId: "G-M3GKFFF5YR"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const messaging = getMessaging(app);
+
+        document.getElementById('notify-btn').addEventListener('click', async () => {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    const token = await getToken(messaging, { 
+                        vapidKey: 'BEZFcMoLv0a7bdH-faz2Jxqza__JZiF1jok68rQbIIbh0GcQyHXxtrJxWy24xzVUinSqMlNl3YLK43d8CSlaiqY' 
+                    });
+                    if (token) {
+                        console.log("Token:", token);
+                        alert("تم تفعيل الإشعارات بنجاح! 🌙");
+                    }
+                } else {
+                    alert("يرجى السماح بالإشعارات من إعدادات المتصفح.");
+                }
+            } catch (error) {
+                console.error("خطأ في تفعيل الإشعارات:", error);
+            }
+        });
+    </script>
 </body>
 </html>
+ 
