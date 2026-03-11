@@ -1,10 +1,10 @@
-const cacheName = 'azkar-v8-final';
+const cacheName = 'azkar-v9-final';
 const assets = [
-  '/',
-  '/index.html',
-  '/dhikr-data.js',
-  '/manifest.json',
-  '/icon.png' 
+  './',
+  './index.html',
+  './dhikr-data.js',
+  './manifest.json',
+  './icon.png' 
 ];
 
 // 1. التثبيت والحفظ في الكاش
@@ -27,17 +27,17 @@ self.addEventListener('activate', e => {
   return self.clients.claim();
 });
 
-// 3. استقبال الأوامر من المتصفح (التصحيح هنا)
+// 3. استقبال الأوامر من المتصفح لظهور الإشعارات
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
         const options = {
             body: event.data.body,
-            icon: '/icon.png',
-            badge: '/icon.png',
+            icon: './icon.png',
+            badge: './icon.png',
             vibrate: [200, 100, 200],
             tag: 'azkar-reminder', 
             renotify: true,
-            data: { url: '/' }
+            data: { url: './' }
         };
         self.registration.showNotification(event.data.title, options);
     }
@@ -54,11 +54,13 @@ self.addEventListener('fetch', e => {
 self.addEventListener('notificationclick', e => {
     e.notification.close();
     e.waitUntil(
-        clients.matchAll({ type: 'window' }).then(clientList => {
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+            // نبحث إذا كان التطبيق مفتوحاً مسبقاً للتركيز عليه بدلاً من فتح نافذة جديدة
             for (const client of clientList) {
-                if (client.url === '/' && 'focus' in client) return client.focus();
+                if (client.url.includes('SANAD-ISLAMIC-DHIKR') && 'focus' in client) return client.focus();
             }
-            if (clients.openWindow) return clients.openWindow('/');
+            if (clients.openWindow) return clients.openWindow('./');
         })
     );
 });
+ 
