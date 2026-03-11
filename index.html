@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#0f3d0f">
     <meta name="description" content="تطبيق أذكار المسلم - حصن المسلم الشامل">
     <title>أذكار المسلم</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -233,7 +233,7 @@
 
     <button id="install-btn" onclick="installApp()">تثبيت التطبيق ⬇</button>
 
-    <script src="dhikr-data.js"></script>
+    <script src="./dhikr-data.js"></script>
 
     <script>
         // --- كود المنبه المحلي للمستخدم ---
@@ -249,15 +249,14 @@
             localStorage.setItem('user_morning_time', morning);
             localStorage.setItem('user_evening_time', evening);
             
-            // نطلب صلاحية الإشعارات فوراً عند الحفظ لضمان وصول التنبيه
             if (Notification.permission !== "granted") {
                 Notification.requestPermission();
             }
             
-            alert("تم حفظ مواعيدك بنجاح! سيقوم التطبيق بتذكيرك 🌙");
+            alert("تم حفظ مواعيدك بنجاح! سيقوم التطبيق بتذكيرك 🌙\n(تأكد من ترك التطبيق يعمل في الخلفية)");
         }
 
-        // فحص الوقت كل ثانية لضمان الدقة
+        // فحص الوقت كل ثانية وإرسال الأمر لـ Service Worker
         setInterval(() => {
             const now = new Date();
             const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
@@ -265,32 +264,39 @@
             const savedMorning = localStorage.getItem('user_morning_time');
             const savedEvening = localStorage.getItem('user_evening_time');
 
-            // نرسل الإشعار في الثانية صفر فقط حتى لا يتكرر الإشعار 60 مرة في نفس الدقيقة
             if (now.getSeconds() === 0) {
-                if (currentTime === savedMorning) triggerNotification("☀️ أذكار الصباح", "حان الآن موعد أذكار الصباح، حصن نفسك.");
-                if (currentTime === savedEvening) triggerNotification("🌙 أذكار المساء", "حان الآن موعد أذكار المساء، ذكر الله طمأنينة لقلبك.");
+                if (currentTime === savedMorning) sendToServiceWorker("☀️ أذكار الصباح", "حان الآن موعد أذكار الصباح، حصن نفسك.");
+                if (currentTime === savedEvening) sendToServiceWorker("🌙 أذكار المساء", "حان الآن موعد أذكار المساء، ذكر الله طمأنينة لقلبك.");
             }
         }, 1000);
 
-        function triggerNotification(title, body) {
+        function sendToServiceWorker(title, body) {
             if (Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification(title, {
-                        body: body,
-                        icon: 'icon.png',
-                        vibrate: [200, 100, 200]
+                // إرسال البيانات إلى sw.js ليتولى هو إظهار الإشعار بشكل أفضل
+                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'SHOW_NOTIFICATION',
+                        title: title,
+                        body: body
                     });
-                });
+                } else {
+                    // كود احتياطي في حال تأخر تحميل السيرفس وركر
+                    navigator.serviceWorker.ready.then(registration => {
+                        registration.showNotification(title, {
+                            body: body,
+                            icon: './icon.png',
+                            badge: './icon.png',
+                            vibrate: [200, 100, 200]
+                        });
+                    });
+                }
             }
         }
 
-        // استرجاع المواعيد عند فتح التطبيق
         window.addEventListener('load', () => {
             if (localStorage.getItem('user_morning_time')) document.getElementById('morning-time').value = localStorage.getItem('user_morning_time');
             if (localStorage.getItem('user_evening_time')) document.getElementById('evening-time').value = localStorage.getItem('user_evening_time');
         });
-        // --- نهاية كود المنبه المحلي ---
-
 
         // --- باقي الكود الأصلي للتطبيق ---
         const grid = document.getElementById('categories-grid');
@@ -430,9 +436,9 @@
             }
         }
 
-        // تسجيل السيرفس وركر الخاص بالأوفلاين
+        // تسجيل السيرفس وركر بالأوفلاين
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(console.error);
+            navigator.serviceWorker.register('./sw.js').catch(console.error);
         }
 
         init();
