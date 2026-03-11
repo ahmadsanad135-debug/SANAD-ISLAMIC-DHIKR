@@ -198,6 +198,25 @@
     </header>
 
     <div class="container" id="home-page">
+        <div id="reminders-setup" style="background: var(--card); padding: 15px; border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--accent); margin-bottom: 20px;">
+            <h3 style="font-size: 1rem; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                ⏰ ضبط تنبيهاتك الخاصة
+            </h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 130px;">
+                    <label style="display: block; font-size: 0.8rem; margin-bottom: 5px;">أذكار الصباح</label>
+                    <input type="time" id="morning-time" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--text);">
+                </div>
+                <div style="flex: 1; min-width: 130px;">
+                    <label style="display: block; font-size: 0.8rem; margin-bottom: 5px;">أذكار المساء</label>
+                    <input type="time" id="evening-time" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--text);">
+                </div>
+            </div>
+            <button onclick="saveMyAlarms()" style="width: 100%; margin-top: 15px; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold;">
+                حفظ المواعيد ✅
+            </button>
+        </div>
+
         <div class="grid" id="categories-grid"></div>
         <p id="loading-msg" style="text-align:center; margin-top:20px;">جاري تحميل الأذكار...</p>
     </div>
@@ -217,6 +236,63 @@
     <script src="dhikr-data.js"></script>
 
     <script>
+        // --- كود المنبه المحلي للمستخدم ---
+        function saveMyAlarms() {
+            const morning = document.getElementById('morning-time').value;
+            const evening = document.getElementById('evening-time').value;
+
+            if (!morning || !evening) {
+                alert("لطفاً اختر الوقت للصباح والمساء");
+                return;
+            }
+
+            localStorage.setItem('user_morning_time', morning);
+            localStorage.setItem('user_evening_time', evening);
+            
+            // نطلب صلاحية الإشعارات فوراً عند الحفظ لضمان وصول التنبيه
+            if (Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
+            
+            alert("تم حفظ مواعيدك بنجاح! سيقوم التطبيق بتذكيرك 🌙");
+        }
+
+        // فحص الوقت كل ثانية لضمان الدقة
+        setInterval(() => {
+            const now = new Date();
+            const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            
+            const savedMorning = localStorage.getItem('user_morning_time');
+            const savedEvening = localStorage.getItem('user_evening_time');
+
+            // نرسل الإشعار في الثانية صفر فقط حتى لا يتكرر الإشعار 60 مرة في نفس الدقيقة
+            if (now.getSeconds() === 0) {
+                if (currentTime === savedMorning) triggerNotification("☀️ أذكار الصباح", "حان الآن موعد أذكار الصباح، حصن نفسك.");
+                if (currentTime === savedEvening) triggerNotification("🌙 أذكار المساء", "حان الآن موعد أذكار المساء، ذكر الله طمأنينة لقلبك.");
+            }
+        }, 1000);
+
+        function triggerNotification(title, body) {
+            if (Notification.permission === "granted") {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, {
+                        body: body,
+                        icon: 'icon.png',
+                        vibrate: [200, 100, 200]
+                    });
+                });
+            }
+        }
+
+        // استرجاع المواعيد عند فتح التطبيق
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('user_morning_time')) document.getElementById('morning-time').value = localStorage.getItem('user_morning_time');
+            if (localStorage.getItem('user_evening_time')) document.getElementById('evening-time').value = localStorage.getItem('user_evening_time');
+        });
+        // --- نهاية كود المنبه المحلي ---
+
+
+        // --- باقي الكود الأصلي للتطبيق ---
         const grid = document.getElementById('categories-grid');
         const dhikrPage = document.getElementById('dhikr-page');
         const homePage = document.getElementById('home-page');
@@ -362,7 +438,7 @@
         init();
     </script>
 
-        <script type="module">
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
@@ -380,31 +456,25 @@
         const messaging = getMessaging(app);
 
         document.getElementById('notify-btn').addEventListener('click', async () => {
-            console.log("محاولة طلب الإذن..."); // للتأكد أن الزر يعمل
             try {
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
-                    // تعديل المسار ليتناسب مع GitHub Pages
                     const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
-                    
                     const token = await getToken(messaging, { 
                         vapidKey: 'BEZFcMoLv0a7bdH-faz2Jxqza__JZiF1jok68rQbIIbh0GcQyHXxtrJxWy24xzVUinSqMlNl3YLK43d8CSlaiqY',
                         serviceWorkerRegistration: registration
                     });
 
                     if (token) {
-                        console.log("Token:", token);
-                        alert("تم التفعيل بنجاح! 🌙");
+                        alert("تم تفعيل الإشعارات بنجاح! 🌙");
                     }
                 } else {
                     alert("يجب السماح بالإشعارات من إعدادات المتصفح.");
                 }
             } catch (error) {
-                console.error("Error details:", error);
-                alert("حدث خطأ: تأكد من رفع ملف firebase-messaging-sw.js في المستودع");
+                console.error("Error:", error);
             }
         });
     </script>
 </body>
 </html>
- 
