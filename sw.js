@@ -1,3 +1,4 @@
+importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 const cacheName = 'azkar-v9-final';
 const assets = [
   './',
