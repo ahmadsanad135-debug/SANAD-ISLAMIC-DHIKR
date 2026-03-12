@@ -184,6 +184,19 @@
 
         @keyframes ripple { to { transform: scale(4); opacity: 0; } }
     </style>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(function(OneSignal) {
+    OneSignal.init({
+      appId: "ضع_هنا_الـ_APP_ID", // ⚠️ هام جداً: احذف هذه الجملة وضع رقم الـ App ID الخاص بك من موقع OneSignal
+      safari_web_id: "",
+      notifyButton: {
+        enable: true, // يظهر زر صغير للمستخدم للاشتراك بالإشعارات
+      },
+    });
+  });
+</script>
 </head>
 <body>
 
@@ -196,7 +209,45 @@
             </button>
         </div>
     </header>
+<div style="direction: rtl; padding: 20px; background-color: #f8fafc; border-radius: 12px; margin: 20px auto; max-width: 400px; text-align: center; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <h3 style="color: #0f172a; margin-bottom: 10px;">إعدادات تذكير الأذكار ⏱️</h3>
+    <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">حدد الوقت المناسب لك وسنقوم بتذكيرك يومياً</p>
+    
+    <div style="margin-bottom: 15px; text-align: right;">
+        <label for="morning-time" style="display: block; margin-bottom: 5px; font-weight: bold; color: #334155;">وقت أذكار الصباح:</label>
+        <input type="time" id="morning-time" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit;">
+    </div>
+    
+    <div style="margin-bottom: 20px; text-align: right;">
+        <label for="evening-time" style="display: block; margin-bottom: 5px; font-weight: bold; color: #334155;">وقت أذكار المساء:</label>
+        <input type="time" id="evening-time" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit;">
+    </div>
+    
+    <button onclick="saveReminderTimes()" style="background-color: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 8px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer;">حفظ وتفعيل التنبيه</button>
+</div>
 
+<script>
+function saveReminderTimes() {
+    const morningTime = document.getElementById('morning-time').value;
+    const eveningTime = document.getElementById('evening-time').value;
+
+    if (!morningTime || !eveningTime) {
+        alert("يرجى تحديد وقت لكل من أذكار الصباح والمساء.");
+        return;
+    }
+
+    // التأكد من تحميل OneSignal قبل إرسال البيانات
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(function(OneSignal) {
+        // إرسال الأوقات كـ Tags لـ OneSignal
+        OneSignal.User.addTags({
+            "morning_reminder": morningTime,
+            "evening_reminder": eveningTime
+        });
+        alert("تم حفظ أوقات التذكير بنجاح! 🔔");
+    });
+}
+</script>
     <div class="container" id="home-page">
         <div id="reminders-setup" style="background: var(--card); padding: 15px; border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--accent); margin-bottom: 20px;">
             <h3 style="font-size: 1rem; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px;">
