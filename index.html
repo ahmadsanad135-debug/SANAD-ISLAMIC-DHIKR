@@ -50,7 +50,7 @@
         
         .header-buttons { display: flex; gap: 10px; }
 
-        .theme-btn {
+        .theme-btn, .notify-btn {
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
@@ -66,7 +66,7 @@
             font-size: 1.2rem;
         }
         
-        .theme-btn:active { transform: scale(0.9); }
+        .theme-btn:active, .notify-btn:active { transform: scale(0.9); }
 
         .container { padding: 20px; max-width: 800px; margin: 0 auto; }
         
@@ -184,90 +184,22 @@
 
         @keyframes ripple { to { transform: scale(4); opacity: 0; } }
     </style>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(function(OneSignal) {
-    OneSignal.init({
-      appId: "ضع_هنا_الـ_APP_ID", // ⚠️ هام جداً: احذف هذه الجملة وضع رقم الـ App ID الخاص بك من موقع OneSignal
-      safari_web_id: "",
-      notifyButton: {
-        enable: true, // يظهر زر صغير للمستخدم للاشتراك بالإشعارات
-      },
-    });
-  });
-</script>
 </head>
 <body>
 
     <header>
         <h1>أذكار المسلم</h1>
         <div class="header-buttons">
-            <button class="theme-btn" id="notify-btn" aria-label="تفعيل التنبيهات">🔔</button>
+            <button class="notify-btn" onclick="window.enableNotifications()" aria-label="تفعيل التنبيهات" title="تفعيل تنبيهات الأذكار">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            </button>
             <button class="theme-btn" onclick="toggleTheme()" aria-label="تغيير المظهر">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
             </button>
         </div>
     </header>
-<div style="direction: rtl; padding: 20px; background-color: #f8fafc; border-radius: 12px; margin: 20px auto; max-width: 400px; text-align: center; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-    <h3 style="color: #0f172a; margin-bottom: 10px;">إعدادات تذكير الأذكار ⏱️</h3>
-    <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">حدد الوقت المناسب لك وسنقوم بتذكيرك يومياً</p>
-    
-    <div style="margin-bottom: 15px; text-align: right;">
-        <label for="morning-time" style="display: block; margin-bottom: 5px; font-weight: bold; color: #334155;">وقت أذكار الصباح:</label>
-        <input type="time" id="morning-time" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit;">
-    </div>
-    
-    <div style="margin-bottom: 20px; text-align: right;">
-        <label for="evening-time" style="display: block; margin-bottom: 5px; font-weight: bold; color: #334155;">وقت أذكار المساء:</label>
-        <input type="time" id="evening-time" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit;">
-    </div>
-    
-    <button onclick="saveReminderTimes()" style="background-color: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 8px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer;">حفظ وتفعيل التنبيه</button>
-</div>
 
-<script>
-function saveReminderTimes() {
-    const morningTime = document.getElementById('morning-time').value;
-    const eveningTime = document.getElementById('evening-time').value;
-
-    if (!morningTime || !eveningTime) {
-        alert("يرجى تحديد وقت لكل من أذكار الصباح والمساء.");
-        return;
-    }
-
-    // التأكد من تحميل OneSignal قبل إرسال البيانات
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    window.OneSignalDeferred.push(function(OneSignal) {
-        // إرسال الأوقات كـ Tags لـ OneSignal
-        OneSignal.User.addTags({
-            "morning_reminder": morningTime,
-            "evening_reminder": eveningTime
-        });
-        alert("تم حفظ أوقات التذكير بنجاح! 🔔");
-    });
-}
-</script>
     <div class="container" id="home-page">
-        <div id="reminders-setup" style="background: var(--card); padding: 15px; border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--accent); margin-bottom: 20px;">
-            <h3 style="font-size: 1rem; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px;">
-                ⏰ ضبط تنبيهاتك الخاصة
-            </h3>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 130px;">
-                    <label style="display: block; font-size: 0.8rem; margin-bottom: 5px;">أذكار الصباح</label>
-                    <input type="time" id="morning-time" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--text);">
-                </div>
-                <div style="flex: 1; min-width: 130px;">
-                    <label style="display: block; font-size: 0.8rem; margin-bottom: 5px;">أذكار المساء</label>
-                    <input type="time" id="evening-time" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--text);">
-                </div>
-            </div>
-            <button onclick="saveMyAlarms()" style="width: 100%; margin-top: 15px; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold;">
-                حفظ المواعيد ✅
-            </button>
-        </div>
-
         <div class="grid" id="categories-grid"></div>
         <p id="loading-msg" style="text-align:center; margin-top:20px;">جاري تحميل الأذكار...</p>
     </div>
@@ -287,69 +219,6 @@ function saveReminderTimes() {
     <script src="./dhikr-data.js"></script>
 
     <script>
-        // --- كود المنبه المحلي للمستخدم ---
-        function saveMyAlarms() {
-            const morning = document.getElementById('morning-time').value;
-            const evening = document.getElementById('evening-time').value;
-
-            if (!morning || !evening) {
-                alert("لطفاً اختر الوقت للصباح والمساء");
-                return;
-            }
-
-            localStorage.setItem('user_morning_time', morning);
-            localStorage.setItem('user_evening_time', evening);
-            
-            if (Notification.permission !== "granted") {
-                Notification.requestPermission();
-            }
-            
-            alert("تم حفظ مواعيدك بنجاح! سيقوم التطبيق بتذكيرك 🌙\n(تأكد من ترك التطبيق يعمل في الخلفية)");
-        }
-
-        // فحص الوقت كل ثانية وإرسال الأمر لـ Service Worker
-        setInterval(() => {
-            const now = new Date();
-            const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-            
-            const savedMorning = localStorage.getItem('user_morning_time');
-            const savedEvening = localStorage.getItem('user_evening_time');
-
-            if (now.getSeconds() === 0) {
-                if (currentTime === savedMorning) sendToServiceWorker("☀️ أذكار الصباح", "حان الآن موعد أذكار الصباح، حصن نفسك.");
-                if (currentTime === savedEvening) sendToServiceWorker("🌙 أذكار المساء", "حان الآن موعد أذكار المساء، ذكر الله طمأنينة لقلبك.");
-            }
-        }, 1000);
-
-        function sendToServiceWorker(title, body) {
-            if (Notification.permission === "granted") {
-                // إرسال البيانات إلى sw.js ليتولى هو إظهار الإشعار بشكل أفضل
-                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({
-                        type: 'SHOW_NOTIFICATION',
-                        title: title,
-                        body: body
-                    });
-                } else {
-                    // كود احتياطي في حال تأخر تحميل السيرفس وركر
-                    navigator.serviceWorker.ready.then(registration => {
-                        registration.showNotification(title, {
-                            body: body,
-                            icon: './icon.png',
-                            badge: './icon.png',
-                            vibrate: [200, 100, 200]
-                        });
-                    });
-                }
-            }
-        }
-
-        window.addEventListener('load', () => {
-            if (localStorage.getItem('user_morning_time')) document.getElementById('morning-time').value = localStorage.getItem('user_morning_time');
-            if (localStorage.getItem('user_evening_time')) document.getElementById('evening-time').value = localStorage.getItem('user_evening_time');
-        });
-
-        // --- باقي الكود الأصلي للتطبيق ---
         const grid = document.getElementById('categories-grid');
         const dhikrPage = document.getElementById('dhikr-page');
         const homePage = document.getElementById('home-page');
@@ -487,7 +356,7 @@ function saveReminderTimes() {
             }
         }
 
-        // تسجيل السيرفس وركر بالأوفلاين
+        // تسجيل السيرفس وركر الأساسي للأوفلاين
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').catch(console.error);
         }
@@ -499,6 +368,7 @@ function saveReminderTimes() {
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
+        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyCsF_k_WR9ScrBC1Nq3hWboiWVm4KEigNM",
             authDomain: "islamic-dhikr.firebaseapp.com",
@@ -512,26 +382,35 @@ function saveReminderTimes() {
         const app = initializeApp(firebaseConfig);
         const messaging = getMessaging(app);
 
-        document.getElementById('notify-btn').addEventListener('click', async () => {
+        // جعل دالة التفعيل متاحة في النطاق العام (Global Scope) ليتمكن الزر من استدعائها
+        window.enableNotifications = async () => {
             try {
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
-                    const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+                    // استخدام الـ VAPID Key الخاص بك
                     const token = await getToken(messaging, { 
-                        vapidKey: 'BEZFcMoLv0a7bdH-faz2Jxqza__JZiF1jok68rQbIIbh0GcQyHXxtrJxWy24xzVUinSqMlNl3YLK43d8CSlaiqY',
-                        serviceWorkerRegistration: registration
+                        vapidKey: 'BEr94Tn-YdNK-lpzjAWXc2_qX5BrmMsuiu-uRx5vEPQJ41zpFGGjL_vxnPuwMZkfmkiJNP04VJzPsqEhx2rnwwQ' 
                     });
-
+                    
                     if (token) {
-                        alert("تم تفعيل الإشعارات بنجاح! 🌙");
+                        console.log("تم تفعيل الإشعارات والتسجيل في Firebase:", token);
+                        alert("تم تفعيل إشعارات الأذكار بنجاح! 🌙");
+                        // يمكنك حفظ حالة التفعيل في localStorage إذا أردت إخفاء الزر لاحقاً
+                        localStorage.setItem('notificationsEnabled', 'true');
                     }
                 } else {
-                    alert("يجب السماح بالإشعارات من إعدادات المتصفح.");
+                    alert("لقد قمت برفض التنبيهات. يرجى السماح بها من إعدادات المتصفح.");
                 }
             } catch (error) {
-                console.error("Error:", error);
+                console.error("خطأ أثناء تفعيل التنبيهات:", error);
+                alert("حدث خطأ أثناء محاولة تفعيل التنبيهات.");
             }
-        });
+        };
+
+        // اختياري: إخفاء زر التنبيهات إذا تم تفعيلها مسبقاً
+        if (localStorage.getItem('notificationsEnabled') === 'true' && Notification.permission === 'granted') {
+            document.querySelector('.notify-btn').style.display = 'none';
+        }
     </script>
 </body>
 </html>
