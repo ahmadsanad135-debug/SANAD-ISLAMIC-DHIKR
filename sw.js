@@ -1,4 +1,4 @@
-const cacheName = 'azkar-v10-firebase'; // رفعنا الإصدار للتحديث
+const cacheName = 'azkar-v11-firebase'; // رفعنا الإصدار للتحديث
 const assets = [
   './',
   './index.html',
