@@ -50,7 +50,7 @@
         
         .header-buttons { display: flex; gap: 10px; }
 
-        .theme-btn, .notify-btn {
+        .theme-btn {
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
@@ -66,7 +66,7 @@
             font-size: 1.2rem;
         }
         
-        .theme-btn:active, .notify-btn:active { transform: scale(0.9); }
+        .theme-btn:active { transform: scale(0.9); }
 
         .container { padding: 20px; max-width: 800px; margin: 0 auto; }
         
@@ -183,29 +183,6 @@
         }
 
         @keyframes ripple { to { transform: scale(4); opacity: 0; } }
-
-        /* تنسيقات التبويبة (Modal) الجديدة */
-        #notification-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;
-            backdrop-filter: blur(3px);
-        }
-        .modal-content {
-            background: var(--card); width: 90%; max-width: 400px; padding: 30px;
-            border-radius: 25px; text-align: center; box-shadow: var(--shadow);
-            animation: scaleIn 0.3s ease;
-        }
-        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
-        .modal-icon { font-size: 3rem; margin-bottom: 15px; }
-        .modal-title { color: var(--primary); font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; }
-        .modal-desc { color: var(--text-sec); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; }
-        
-        .btn-group { display: flex; gap: 10px; }
-        .btn-allow { background: var(--primary); color: white; border: none; padding: 14px; flex: 1; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s;}
-        .btn-allow:active { transform: scale(0.95); }
-        .btn-later { background: rgba(128,128,128,0.1); color: var(--text); border: none; padding: 14px; flex: 1; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s;}
-        .btn-later:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -213,26 +190,11 @@
     <header>
         <h1>أذكار المسلم</h1>
         <div class="header-buttons">
-            <button class="notify-btn" onclick="document.getElementById('notification-modal').style.display='flex'" aria-label="تفعيل التنبيهات" title="تفعيل تنبيهات الأذكار">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-            </button>
             <button class="theme-btn" onclick="toggleTheme()" aria-label="تغيير المظهر">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
             </button>
         </div>
     </header>
-
-    <div id="notification-modal">
-        <div class="modal-content">
-            <div class="modal-icon">🔔</div>
-            <div class="modal-title">تفعيل التنبيهات</div>
-            <div class="modal-desc">هل تود استقبال تنبيهات يومية لأذكار الصباح والمساء لتبقى على صلة بذكر الله؟</div>
-            <div class="btn-group">
-                <button class="btn-allow" onclick="window.requestFirebasePermission()">تفعيل الآن</button>
-                <button class="btn-later" onclick="document.getElementById('notification-modal').style.display='none'">لاحقاً</button>
-            </div>
-        </div>
-    </div>
 
     <div class="container" id="home-page">
         <div class="grid" id="categories-grid"></div>
@@ -391,78 +353,12 @@
             }
         }
 
-        // تسجيل السيرفس وركر الأساسي للأوفلاين
+        // تسجيل السيرفس وركر بالأوفلاين
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').catch(console.error);
         }
 
         init();
-    </script>
-
-        <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCsF_k_WR9ScrBC1Nq3hWboiWVm4KEigNM",
-            authDomain: "islamic-dhikr.firebaseapp.com",
-            projectId: "islamic-dhikr",
-            storageBucket: "islamic-dhikr.firebasestorage.app",
-            messagingSenderId: "335914729881",
-            appId: "1:335914729881:web:ab4f5e4c8added6fc65308",
-            measurementId: "G-M3GKFFF5YR"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
-
-        window.requestFirebasePermission = async () => {
-            document.getElementById('notification-modal').style.display = 'none';
-            
-            try {
-                // التأكد من دعم المتصفح للإشعارات
-                if (!('Notification' in window)) {
-                    alert("متصفحك لا يدعم الإشعارات.");
-                    return;
-                }
-
-                // طلب الإذن
-                const permission = await Notification.requestPermission();
-                
-                if (permission === 'granted') {
-                    // تسجيل السيرفس وركر
-                    const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
-                    
-                    // محاولة جلب التوكن
-                    getToken(messaging, { 
-                        vapidKey: 'BEr94Tn-YdNK-lpzjAWXc2_qX5BrmMsuiu-uRx5vEPQJ41zpFGGjL_vxnPuwMZkfmkiJNP04VJzPsqEhx2rnwwQ',
-                        serviceWorkerRegistration: registration
-                    }).then((token) => {
-                        if (token) {
-                            alert("نجاح! هذا هو التوكن: \n\n" + token.substring(0, 30) + "...");
-                            console.log("Token:", token);
-                            localStorage.setItem('notificationsEnabled', 'true');
-                            document.querySelector('.notify-btn').style.display = 'none';
-                        } else {
-                            alert("لم يتم استلام Token. جرب مسح بيانات الموقع.");
-                        }
-                    }).catch((err) => {
-                        alert("فشل جلب التوكن: " + err.message);
-                        console.error("Token Error:", err);
-                    });
-                    
-                } else {
-                    alert("لقد قمت برفض التنبيهات. يرجى السماح بها من إعدادات المتصفح.");
-                }
-            } catch (error) {
-                alert("خطأ عام: " + error.message);
-                console.error("General Error:", error);
-            }
-        };
-
-        if (localStorage.getItem('notificationsEnabled') === 'true' && Notification.permission === 'granted') {
-            document.querySelector('.notify-btn').style.display = 'none';
-        }
     </script>
 </body>
 </html>
