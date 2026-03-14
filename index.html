@@ -399,7 +399,7 @@
         init();
     </script>
 
-    <script type="module">
+        <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
@@ -417,37 +417,49 @@
         const messaging = getMessaging(app);
 
         window.requestFirebasePermission = async () => {
-            // إخفاء التبويبة بمجرد الضغط
             document.getElementById('notification-modal').style.display = 'none';
             
             try {
-                // تسجيل السيرفس وركر الخاص بـ Firebase صراحة لحل مشكلة التعارض
-                const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
-                
+                // التأكد من دعم المتصفح للإشعارات
+                if (!('Notification' in window)) {
+                    alert("متصفحك لا يدعم الإشعارات.");
+                    return;
+                }
+
+                // طلب الإذن
                 const permission = await Notification.requestPermission();
+                
                 if (permission === 'granted') {
-                    // تمرير registration هنا هو الحل السحري للمشكلة
-                    const token = await getToken(messaging, { 
+                    // تسجيل السيرفس وركر
+                    const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+                    
+                    // محاولة جلب التوكن
+                    getToken(messaging, { 
                         vapidKey: 'BEr94Tn-YdNK-lpzjAWXc2_qX5BrmMsuiu-uRx5vEPQJ41zpFGGjL_vxnPuwMZkfmkiJNP04VJzPsqEhx2rnwwQ',
                         serviceWorkerRegistration: registration
+                    }).then((token) => {
+                        if (token) {
+                            alert("نجاح! هذا هو التوكن: \n\n" + token.substring(0, 30) + "...");
+                            console.log("Token:", token);
+                            localStorage.setItem('notificationsEnabled', 'true');
+                            document.querySelector('.notify-btn').style.display = 'none';
+                        } else {
+                            alert("لم يتم استلام Token. جرب مسح بيانات الموقع.");
+                        }
+                    }).catch((err) => {
+                        alert("فشل جلب التوكن: " + err.message);
+                        console.error("Token Error:", err);
                     });
                     
-                    if (token) {
-                        console.log("تم تفعيل الإشعارات:", token);
-                        alert("تم تفعيل إشعارات الأذكار بنجاح! 🌙");
-                        localStorage.setItem('notificationsEnabled', 'true');
-                        document.querySelector('.notify-btn').style.display = 'none';
-                    }
                 } else {
                     alert("لقد قمت برفض التنبيهات. يرجى السماح بها من إعدادات المتصفح.");
                 }
             } catch (error) {
-                console.error("خطأ أثناء تفعيل التنبيهات:", error);
-                alert("حدث خطأ أثناء محاولة تفعيل التنبيهات. تأكد من اتصالك بالإنترنت وأنك تتصفح من خلال https.");
+                alert("خطأ عام: " + error.message);
+                console.error("General Error:", error);
             }
         };
 
-        // إخفاء الزر إذا كان مفعل مسبقاً
         if (localStorage.getItem('notificationsEnabled') === 'true' && Notification.permission === 'granted') {
             document.querySelector('.notify-btn').style.display = 'none';
         }
