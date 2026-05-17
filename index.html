@@ -377,11 +377,6 @@
             }
         }
 
-        // تسجيل السيرفس وركر الافتراضي للأوفلاين بشكل طبيعي
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(console.error);
-        }
-
         init();
     </script>
 
