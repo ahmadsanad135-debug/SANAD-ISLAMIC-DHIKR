@@ -184,9 +184,9 @@
 
         @keyframes ripple { to { transform: scale(4); opacity: 0; } }
 
-        /* ستايل لوحة الإعدادات المضافة */
+        /* ستايل لوحة التنبيهات */
         #reminders-setup {
-            display: none; background: var(--card); padding: 15px; border-radius: 20px;
+            display: none; background: var(--card); padding: 20px; border-radius: 20px;
             box-shadow: var(--shadow); border: 1px solid var(--accent); margin-bottom: 20px;
             animation: slideDown 0.3s ease-out;
         }
@@ -198,8 +198,8 @@
     <header>
         <h1>أذكار المسلم</h1>
         <div class="header-buttons">
-            <button class="theme-btn" id="bell-btn" onclick="toggleSettings()" aria-label="تفعيل التنبيهات">🔔</button>
-            <button class="theme-btn" onclick="toggleTheme()" aria-label="تغيير المظهر">
+            <button class="theme-btn" onclick="toggleSettings()" aria-label="الإعدادات">🔔</button>
+            <button class="theme-btn" onclick="toggleTheme()" aria-label="تغيير Mظهر">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
             </button>
         </div>
@@ -207,8 +207,8 @@
 
     <div class="container" id="home-page">
         <div id="reminders-setup">
-            <h3 style="font-size: 1rem; margin-bottom: 15px; color: var(--primary);">⏰ إشعارات Firebase الفورية</h3>
-            <p style="font-size: 0.85rem; color: var(--text-sec); margin-bottom: 15px;">اضغط على الزر بالأسفل لتفعيل استقبال التنبيهات والرسائل الفورية من لوحة التحكم.</p>
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">⏰ إشعارات Firebase الفورية</h3>
+            <p style="font-size: 0.85rem; color: var(--text-sec); margin-bottom: 15px;">اضغط على الزر بالأسفل لتفعيل استقبال التنبيهات والرسائل الفورية من لوحة التحكم مباشرة.</p>
             <button onclick="activateFirebaseNotifications()" style="width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; box-shadow: var(--shadow);">
                 ربط وتفعيل الإشعارات الفورية ⚡
             </button>
@@ -357,6 +357,13 @@
 
         function showHome() { homePage.style.display = 'block'; dhikrPage.style.display = 'none'; }
 
+        // دالة فتح وإغلاق لوحة الإعدادات بالجرس
+        function toggleSettings() {
+            const panel = document.getElementById('reminders-setup');
+            const isHidden = window.getComputedStyle(panel).display === 'none';
+            panel.style.display = isHidden ? 'block' : 'none';
+        }
+
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
         });
@@ -370,15 +377,9 @@
             }
         }
 
+        // تسجيل السيرفس وركر الافتراضي للأوفلاين بشكل طبيعي
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').catch(console.error);
-        }
-
-        // دالة إظهار وإخفاء لوحة الإعدادات عند الضغط على الجرس
-        function toggleSettings() {
-            const panel = document.getElementById('reminders-setup');
-            const isHidden = window.getComputedStyle(panel).display === 'none';
-            panel.style.display = isHidden ? 'block' : 'none';
         }
 
         init();
@@ -388,7 +389,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
-        // الـ Config الجديد الخاص بمشروعك الحالي
+        // الـ Config الجديد الفعلي الخاص بمشروعك الحالي
         const firebaseConfig = {
             apiKey: "AIzaSyCs704ZMKYWKTVGkOMdUjYWHlmUsVNDY6U",
             authDomain: "islamic-dhikr-230fa.firebaseapp.com",
@@ -402,31 +403,15 @@
         const app = initializeApp(firebaseConfig);
         const messaging = getMessaging(app);
 
-        // دالة طلب الإذن وجلب التوكن عند الضغط على الزر داخل اللوحة
+        // تفعيل الإشعار مع ربط يدوي بالسيرفس وركر لضمان جلب التوكن بنجاح
         window.activateFirebaseNotifications = function() {
             Notification.requestPermission().then((permission) => {
                 if (permission === 'granted') {
-                    // تم وضع مفتاح الـ VAPID الخاص بك هنا تلقائياً بناءً على مشروعك
-                    getToken(messaging, { vapidKey: 'BGaIic_V7oX9hCHJgI-3n9CAt6f2-O2hX-UjYwVlHwY9mCs704ZMKYWKTVGkOMdUjYWHlmUsVNDY6U' })
-                    .then((currentToken) => {
-                        if (currentToken) {
-                            console.log("Token: ", currentToken);
-                            alert("تم ربط وتفعيل إشعارات Firebase بنجاح! 🎉");
-                        } else {
-                            alert("لم يتم العثور على توكن، يرجى التحقق من صلاحيات المتصفح.");
-                        }
-                    }).catch((err) => {
-                        console.error('حدث خطأ أثناء جلب التوكن: ', err);
-                        alert("خطأ أثناء جلب التوكن، تأكد من رفع الملفات على GitHub Pages (رابط HTTPS)");
-                    });
-                } else {
-                    alert("يرجى إعطاء صلاحية الإشعارات للمتصفح أولاً حتى نتمكن من إرسال الأذكار.");
-                }
-            });
-        }
-
-        // استقبال الإشعارات والتطبيق مفتوح أمام المستخدم (Foreground)
-        onMessage(messaging, (payload) => {
-            alert(`🔔 إشعار فوري جديد:\n${payload.notification.title}\n${payload.notification.body}`);
-        });
-    </script>
+                    
+                    // نقوم بتسجيل ملف الخلفية يدوياً هنا قبل طلب التوكن لحل مشكلة المتصفح الكاش
+                    navigator.serviceWorker.register('./firebase-messaging-sw.js')
+                    .then((registration) => {
+                        // نمرر الـ registration لـ Firebase بشكل مباشر وصريح
+                        getToken(messaging, { 
+                            vapidKey: 'BGaIic_V7oX9hCHJgI-3n9CAt6f2-O2hX-UjYwVlHwY9mCs704ZMKYWKTVGkOMdUjYWH
+ 
