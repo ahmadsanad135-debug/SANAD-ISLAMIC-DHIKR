@@ -191,6 +191,48 @@
             animation: slideDown 0.3s ease-out;
         }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 🎛️ ستايل مفتاح التبديل الدائري الأنيق (Toggle Switch) */
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-top: 5px;
+        }
+        [data-theme="dark"] .toggle-container { background: rgba(255, 255, 255, 0.05); }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        [data-theme="dark"] input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(24px); }
     </style>
 </head>
 <body>
@@ -207,11 +249,16 @@
 
     <div class="container" id="home-page">
         <div id="reminders-setup">
-            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">⏰ إشعارات Firebase الفورية</h3>
-            <p style="font-size: 0.85rem; color: var(--text-sec); margin-bottom: 15px;">اضغط على الزر بالأسفل لتفعيل استقبال التنبيهات والرسائل الفورية من لوحة التحكم مباشرة.</p>
-            <button onclick="activateFirebaseNotifications()" style="width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; box-shadow: var(--shadow);">
-                ربط وتفعيل الإشعارات الفورية ⚡
-            </button>
+            <h3 style="font-size: 1rem; margin-bottom: 5px; color: var(--primary);">⏰ إشعارات الأذكار الفورية</h3>
+            <p style="font-size: 0.8rem; color: var(--text-sec); margin-bottom: 15px;">تحكم في استقبال أذكار التنبيه الفورية على جهازك في أي وقت.</p>
+            
+            <div class="toggle-container">
+                <span style="font-size: 0.9rem; font-weight: bold;">تفعيل استقبال الإشعارات</span>
+                <label class="switch">
+                    <input type="checkbox" id="firebase-toggle" onchange="handleNotificationToggle(this)">
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
 
         <div class="grid" id="categories-grid"></div>
@@ -357,7 +404,6 @@
 
         function showHome() { homePage.style.display = 'block'; dhikrPage.style.display = 'none'; }
 
-        // دالة فتح وإغلاق لوحة الإعدادات بالجرس
         function toggleSettings() {
             const panel = document.getElementById('reminders-setup');
             const isHidden = window.getComputedStyle(panel).display === 'none';
@@ -384,7 +430,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
-        // الـ Config الجديد الفعلي الخاص بمشروعك الحالي
         const firebaseConfig = {
             apiKey: "AIzaSyCs704ZMKYWKTVGkOMdUjYWHlmUsVNDY6U",
             authDomain: "islamic-dhikr-230fa.firebaseapp.com",
@@ -398,14 +443,69 @@
         const app = initializeApp(firebaseConfig);
         const messaging = getMessaging(app);
 
-        // تفعيل الإشعار مع ربط يدوي بالسيرفس وركر لضمان جلب التوكن بنجاح
-        window.activateFirebaseNotifications = function() {
-            Notification.requestPermission().then((permission) => {
-                if (permission === 'granted') {
-                    
-                    // نقوم بتسجيل ملف الخلفية يدوياً هنا قبل طلب التوكن لحل مشكلة المتصفح الكاش
-                    navigator.serviceWorker.register('./firebase-messaging-sw.js')
-                    .then((registration) => {
-                        // نمرر الـ registration لـ Firebase بشكل مباشر وصريح
-                        getToken(messaging, { 
-                            vapidKey: 'BDWhgllFA_C73QSG2VPzH9idpNeHgKh-XoABDwbp94TI-ZtwLGvdLNjft3O-0GseQwhenlURHx3M5z3YKia6Ikw' 
+        // فحص حالة الزر المخزنة وتحديث السويتش عند تشغيل التطبيق أول مرة
+        function checkInitialToggleState() {
+            const isEnabled = localStorage.getItem('firebase_notifications_enabled') === 'true';
+            const toggle = document.getElementById('firebase-toggle');
+            if (toggle) {
+                toggle.checked = isEnabled;
+            }
+        }
+
+        // إدارة عمل السويتش تشغيل وإطفاء
+        window.handleNotificationToggle = function(toggleElement) {
+            if (toggleElement.checked) {
+                Notification.requestPermission().then((permission) => {
+                    if (permission === 'granted') {
+                        
+                        navigator.serviceWorker.register('./firebase-messaging-sw.js')
+                        .then((registration) => {
+                            // جلب التوكن المباشر بالمفتاح الجديد
+                            getToken(messaging, { 
+                                vapidKey: 'BDWhgllFA_C73QSG2VPzH9idpNeHgKh-XoABDwbp94TI-ZtwLGvdLNjft3O-0GseQwhenlURHx3M5z3YKia6Ikw',
+                                serviceWorkerRegistration: registration 
+                            })
+                            .then((currentToken) => {
+                                if (currentToken) {
+                                    console.log("Token: ", currentToken);
+                                    localStorage.setItem('firebase_notifications_enabled', 'true');
+                                    alert("تم ربط وتفعيل إشعارات Firebase بنجاح! 🎉");
+                                } else {
+                                    toggleElement.checked = false;
+                                    alert("لم يتم العثور على توكن، حاول مرة أخرى.");
+                                }
+                            }).catch((err) => {
+                                console.error('خطأ التوكن: ', err);
+                                toggleElement.checked = false;
+                                alert("حدث خطأ أثناء جلب التوكن، تأكد من مطابقة مفتاح الـ VAPID.");
+                            });
+                        }).catch((swErr) => {
+                            console.error('SW Error: ', swErr);
+                            toggleElement.checked = false;
+                            alert("ملف الـ Service Worker مفقود أو غير مسجل بشكل صحيح.");
+                        });
+
+                    } else {
+                        toggleElement.checked = false;
+                        alert("يرجى تفعيل صلاحية الإشعارات للمتصفح أولاً.");
+                    }
+                });
+            } else {
+                // عند إطفاء الزر نقوم بتحديث الحالة فقط محلياً لمنع استقبال الإشعارات بالتطبيق
+                localStorage.setItem('firebase_notifications_enabled', 'false');
+                alert("تم إيقاف استقبال الإشعارات الفورية.");
+            }
+        }
+
+        // استقبال الإشعارات والتطبيق مفتوح
+        onMessage(messaging, (payload) => {
+            if (localStorage.getItem('firebase_notifications_enabled') === 'true') {
+                alert(`🔔 إشعار فوري جديد:\n${payload.notification.title}\n${payload.notification.body}`);
+            }
+        });
+
+        // تشغيل الفحص بعد استقرار الواجهة
+        setTimeout(checkInitialToggleState, 500);
+    </script>
+</body>
+</html>
