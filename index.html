@@ -458,8 +458,9 @@
                 Notification.requestPermission().then((permission) => {
                     if (permission === 'granted') {
                         
-                        navigator.serviceWorker.register('./firebase-messaging-sw.js')
+                        navigator.serviceWorker.register('/SANAD-ISLAMIC-DHIKR/firebase-messaging-sw.js')
                         .then((registration) => {
+
                             // جلب التوكن المباشر بالمفتاح الجديد
                             getToken(messaging, { 
                                 vapidKey: 'BDWhgllFA_C73QSG2VPzH9idpNeHgKh-XoABDwbp94TI-ZtwLGvdLNjft3O-0GseQwhenlURHx3M5z3YKia6Ikw',
