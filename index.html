@@ -304,19 +304,105 @@
         checkDailyReset();
 
         function getCategoryIcon(name) {
-            const icons = {
-                sun: '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>',
-                moon: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>',
-                prayer: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>',
-                sleep: '<path d="M20,12c0-4.42-3.58-8-8-8c-0.57,0-1.13,0.06-1.68,0.16C12.78,4.72,14.5,7.12,14.5,10 c0,4.24-3.32,7.7-7.5,7.95C7.57,17.98,8.12,18,8.68,18C13.1,18,16.68,14.42,16.68,10c0-0.41-0.03-0.81-0.09-1.2 C18.52,9.88,20,10.87,20,12z"/>',
-                hands: '<path d="M18.5 13c-1.38 0-2.5 1.12-2.5 2.5v4.5c0 .28.22.5.5.5s.5-.22.5-.5V15.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v4.5c0 2.76-2.24 5-5 5-2.76 0-5-2.24-5-5v-5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5.5c0 .28.22.5.5.5s.5-.22.5-.5v-4.5c0-1.38-1.12-2.5-2.5-2.5-1.38 0-2.5 1.12-2.5 2.5v5.5c0 3.87 3.13 7 7 7s7-3.13 7-7v-5.5c0-1.38-1.12-2.5-2.5-2.5z"/>'
-            };
-            if (name.includes('الصباح')) return icons.sun;
-            if (name.includes('المساء')) return icons.moon;
-            if (name.includes('النوم')) return icons.sleep;
-            if (name.includes('الصلاة') || name.includes('تسابيح') || name.includes('مسجد') || name.includes('وضوء')) return icons.prayer;
-            return icons.hands;
-        }
+    const icons = {
+
+        morning: `
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        `,
+
+        evening: `
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        `,
+
+        prayer: `
+            <path d="M3 10l9-7 9 7"/>
+            <path d="M5 10v10h14V10"/>
+            <path d="M10 20v-6h4v6"/>
+        `,
+
+        mosque: `
+            <path d="M12 2l4 4v4h2v10H6V10h2V6z"/>
+        `,
+
+        wudu: `
+            <path d="M12 2C9 6 7 8 7 12a5 5 0 0010 0c0-4-2-6-5-10z"/>
+        `,
+
+        sleep: `
+            <path d="M20 12.5A7.5 7.5 0 1111.5 4 6 6 0 0020 12.5z"/>
+        `,
+
+        wakeup: `
+            <circle cx="12" cy="13" r="7"/>
+            <path d="M12 9v4l2 2"/>
+            <path d="M5 3L2 6"/>
+            <path d="M19 3l3 3"/>
+        `,
+
+        food: `
+            <path d="M6 2v10"/>
+            <path d="M10 2v10"/>
+            <path d="M6 6h4"/>
+            <path d="M16 2v18"/>
+        `,
+
+        drink: `
+            <path d="M7 2h10l-1 7a4 4 0 01-8 0z"/>
+            <path d="M9 22h6"/>
+        `,
+
+        home: `
+            <path d="M3 11l9-8 9 8"/>
+            <path d="M5 10v10h14V10"/>
+        `,
+
+        travel: `
+            <path d="M2 16l20-5"/>
+            <path d="M6 12l4 4"/>
+        `,
+
+        quran: `
+            <path d="M4 19a2 2 0 012-2h14"/>
+            <path d="M6 17V5a2 2 0 012-2h12v16"/>
+        `,
+
+        tasbeeh: `
+            <circle cx="12" cy="5" r="2"/>
+            <circle cx="12" cy="12" r="2"/>
+            <circle cx="12" cy="19" r="2"/>
+        `,
+
+        forgiveness: `
+            <path d="M12 2v4"/>
+            <path d="M12 22v-4"/>
+            <path d="M4.93 4.93l2.83 2.83"/>
+            <path d="M16.24 16.24l2.83 2.83"/>
+            <circle cx="12" cy="12" r="5"/>
+        `,
+
+        adhkar: `
+            <path d="M12 3l2.5 5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/>
+        `
+    };
+
+    if (name.includes('الصباح')) return icons.morning;
+    if (name.includes('المساء')) return icons.evening;
+    if (name.includes('الصلاة')) return icons.prayer;
+    if (name.includes('المسجد')) return icons.mosque;
+    if (name.includes('وضوء')) return icons.wudu;
+    if (name.includes('النوم')) return icons.sleep;
+    if (name.includes('الاستيقاظ')) return icons.wakeup;
+    if (name.includes('الطعام')) return icons.food;
+    if (name.includes('الشراب')) return icons.drink;
+    if (name.includes('المنزل')) return icons.home;
+    if (name.includes('السفر')) return icons.travel;
+    if (name.includes('القرآن')) return icons.quran;
+    if (name.includes('تسابيح') || name.includes('التسبيح')) return icons.tasbeeh;
+    if (name.includes('الاستغفار')) return icons.forgiveness;
+
+    return icons.adhkar;
+}
 
         function init() {
             if (typeof dhikrData === 'undefined') {
@@ -329,8 +415,20 @@
             Object.keys(dhikrData).forEach(category => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `<svg class="card-icon" viewBox="0 0 24 24">${getCategoryIcon(category)}</svg><h3>${category}</h3><span>${dhikrData[category].length} ذكر</span>`;
-                card.onclick = () => openCategory(category);
+card.innerHTML = `
+    <svg class="card-icon"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+        ${getCategoryIcon(category)}
+    </svg>
+
+    <h3>${category}</h3>
+    <span>${dhikrData[category].length} ذكر</span>
+`;                card.onclick = () => openCategory(category);
                 grid.appendChild(card);
             });
             if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
