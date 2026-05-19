@@ -556,55 +556,53 @@ card.innerHTML = `
                 Notification.requestPermission().then((permission) => {
                     if (permission === 'granted') {
                         
-                    navigator.serviceWorker.register('/SANAD-ISLAMIC-DHIKR/firebase-messaging-sw.js')                        
-                    .then((registration) => {
+navigator.serviceWorker.register('./sw.js')
+.then((registration) => {
 
-                            // جلب التوكن المباشر بالمفتاح الجديد
-                            getToken(messaging, { 
-                                vapidKey: 'BDWhgllFA_C73QSG2VPzH9idpNeHgKh-XoABDwbp94TI-ZtwLGvdLNjft3O-0GseQwhenlURHx3M5z3YKia6Ikw',
-                                serviceWorkerRegistration: registration 
-                            })
-                            .then((currentToken) => {
-                                if (currentToken) {
-                                    console.log("Token: ", currentToken);
-                                    localStorage.setItem('firebase_notifications_enabled', 'true');
-                                    alert("تم ربط وتفعيل إشعارات Firebase بنجاح! 🎉");
-                                } else {
-                                    toggleElement.checked = false;
-                                    alert("لم يتم العثور على توكن، حاول مرة أخرى.");
-                                }
-                            }).catch((err) => {
-                                console.error('خطأ التوكن: ', err);
-                                toggleElement.checked = false;
-                                alert("حدث خطأ أثناء جلب التوكن، تأكد من مطابقة مفتاح الـ VAPID.");
-                            });
-                        }).catch((swErr) => {
-                            console.error('SW Error: ', swErr);
-                            toggleElement.checked = false;
-                            alert("ملف الـ Service Worker مفقود أو غير مسجل بشكل صحيح.");
-                        });
+    console.log("Service Worker Registered:", registration);
 
-                    } else {
-                        toggleElement.checked = false;
-                        alert("يرجى تفعيل صلاحية الإشعارات للمتصفح أولاً.");
-                    }
-                });
-            } else {
-                // عند إطفاء الزر نقوم بتحديث الحالة فقط محلياً لمنع استقبال الإشعارات بالتطبيق
-                localStorage.setItem('firebase_notifications_enabled', 'false');
-                alert("تم إيقاف استقبال الإشعارات الفورية.");
-            }
+    getToken(messaging, { 
+        vapidKey: 'BDWhgllFA_C73QSG2VPzH9idpNeHgKh-XoABDwbp94TI-ZtwLGvdLNjft3O-0GseQwhenlURHx3M5z3YKia6Ikw',
+        serviceWorkerRegistration: registration 
+    })
+    .then((currentToken) => {
+
+        if (currentToken) {
+
+            console.log("Firebase Token:", currentToken);
+
+            localStorage.setItem('firebase_notifications_enabled', 'true');
+
+            alert("تم تفعيل إشعارات Firebase بنجاح 🎉");
+
+        } else {
+
+            console.error("No registration token available");
+
+            toggleElement.checked = false;
+
+            alert("تعذر الحصول على التوكن.");
+
         }
 
-        // استقبال الإشعارات والتطبيق مفتوح
-        onMessage(messaging, (payload) => {
-            if (localStorage.getItem('firebase_notifications_enabled') === 'true') {
-                alert(`🔔 إشعار فوري جديد:\n${payload.notification.title}\n${payload.notification.body}`);
-            }
-        });
+    })
+    .catch((err) => {
 
-        // تشغيل الفحص بعد استقرار الواجهة
-        setTimeout(checkInitialToggleState, 500);
-    </script>
-</body>
-</html>
+        console.error("Token Error:", err);
+
+        toggleElement.checked = false;
+
+        alert("حدث خطأ أثناء إنشاء Firebase Token.");
+
+    });
+
+})
+.catch((err) => {
+
+    console.error("Service Worker Error:", err);
+
+    toggleElement.checked = false;
+
+    alert("فشل تسجيل Service Worker.");
+
+});
