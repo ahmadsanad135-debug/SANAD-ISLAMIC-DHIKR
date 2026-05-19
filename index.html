@@ -556,8 +556,8 @@ card.innerHTML = `
                 Notification.requestPermission().then((permission) => {
                     if (permission === 'granted') {
                         
-                        navigator.serviceWorker.register('/SANAD-ISLAMIC-DHIKR/firebase-messaging-sw.js')
-                        .then((registration) => {
+                    navigator.serviceWorker.register('/SANAD-ISLAMIC-DHIKR/firebase-messaging-sw.js')                        
+                    .then((registration) => {
 
                             // جلب التوكن المباشر بالمفتاح الجديد
                             getToken(messaging, { 
