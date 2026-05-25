@@ -489,12 +489,20 @@
         const messaging = getMessaging(app);
 
         function checkInitialToggleState() {
-            const isEnabled = localStorage.getItem('firebase_notifications_enabled') === 'true';
-            const toggle = document.getElementById('firebase-toggle');
-            if (toggle) {
-                toggle.checked = isEnabled;
-            }
+    const isEnabled = localStorage.getItem('firebase_notifications_enabled') === 'true';
+    const toggle = document.getElementById('firebase-toggle');
+    
+    if (toggle) {
+        // التحقق من إذن المتصفح الفعلي والتفعيل معاً
+        if (Notification.permission === 'granted' && isEnabled) {
+            toggle.checked = true;
+        } else {
+            // إذا كان الإذن ملغى في المتصفح، يتم إطفاء الزر تلقائياً
+            toggle.checked = false;
+            localStorage.setItem('firebase_notifications_enabled', 'false');
         }
+    }
+}
 
         window.handleNotificationToggle = function(toggleElement) {
             if (toggleElement.checked) {
