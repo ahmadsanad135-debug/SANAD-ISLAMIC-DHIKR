@@ -184,7 +184,6 @@
 
         @keyframes ripple { to { transform: scale(4); opacity: 0; } }
 
-        /* ستايل لوحة التنبيهات */
         #reminders-setup {
             display: none; background: var(--card); padding: 20px; border-radius: 20px;
             box-shadow: var(--shadow); border: 1px solid var(--accent); margin-bottom: 20px;
@@ -192,7 +191,6 @@
         }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 🎛️ ستايل مفتاح التبديل الدائري الأنيق (Toggle Switch) */
         .toggle-container {
             display: flex;
             justify-content: space-between;
@@ -241,7 +239,7 @@
         <h1>أذكار المسلم</h1>
         <div class="header-buttons">
             <button class="theme-btn" onclick="toggleSettings()" aria-label="الإعدادات">🔔</button>
-            <button class="theme-btn" onclick="toggleTheme()" aria-label="تغيير Mظهر">
+            <button class="theme-btn" onclick="toggleTheme()" aria-label="تغيير المظهر">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
             </button>
         </div>
@@ -304,151 +302,97 @@
         checkDailyReset();
 
         function getCategoryIcon(name) {
-    const icons = {
+            const icons = {
+                morning: `<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>`,
+                evening: `<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>`,
+                prayer: `<path d="M3 10l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>`,
+                mosque: `<path d="M12 2l4 4v4h2v10H6V10h2V6z"/>`,
+                wudu: `<path d="M12 2C9 6 7 8 7 12a5 5 0 0010 0c0-4-2-6-5-10z"/>`,
+                sleep: `<path d="M20 12.5A7.5 7.5 0 1111.5 4 6 6 0 0020 12.5z"/>`,
+                wakeup: `<circle cx="12" cy="13" r="7"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M19 3l3 3"/>`,
+                food: `<path d="M6 2v10"/><path d="M10 2v10"/><path d="M6 6h4"/><path d="M16 2v18"/>`,
+                drink: `<path d="M7 2h10l-1 7a4 4 0 01-8 0z"/><path d="M9 22h6"/>`,
+                home: `<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>`,
+                travel: `<path d="M2 16l20-5"/><path d="M6 12l4 4"/>`,
+                quran: `<path d="M4 19a2 2 0 012-2h14"/><path d="M6 17V5a2 2 0 012-2h12v16"/>`,
+                tasbeeh: `<circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>`,
+                forgiveness: `<path d="M12 2v4"/><path d="M12 22v-4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><circle cx="12" cy="12" r="5"/>`,
+                adhkar: `<path d="M12 3l2.5 5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/>`
+            };
 
-        morning: `
-            <circle cx="12" cy="12" r="5"/>
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        `,
+            if (name.includes('الصباح')) return icons.morning;
+            if (name.includes('المساء')) return icons.evening;
+            if (name.includes('الصلاة')) return icons.prayer;
+            if (name.includes('المسجد')) return icons.mosque;
+            if (name.includes('وضوء')) return icons.wudu;
+            if (name.includes('النوم')) return icons.sleep;
+            if (name.includes('الاستيقاظ')) return icons.wakeup;
+            if (name.includes('الطعام')) return icons.food;
+            if (name.includes('الشراب')) return icons.drink;
+            if (name.includes('المنزل')) return icons.home;
+            if (name.includes('السفر')) return icons.travel;
+            if (name.includes('القرآن')) return icons.quran;
+            if (name.includes('تسابيح') || name.includes('التسبيح')) return icons.tasbeeh;
+            if (name.includes('الاستغفار')) return icons.forgiveness;
 
-        evening: `
-            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-        `,
-
-        prayer: `
-            <path d="M3 10l9-7 9 7"/>
-            <path d="M5 10v10h14V10"/>
-            <path d="M10 20v-6h4v6"/>
-        `,
-
-        mosque: `
-            <path d="M12 2l4 4v4h2v10H6V10h2V6z"/>
-        `,
-
-        wudu: `
-            <path d="M12 2C9 6 7 8 7 12a5 5 0 0010 0c0-4-2-6-5-10z"/>
-        `,
-
-        sleep: `
-            <path d="M20 12.5A7.5 7.5 0 1111.5 4 6 6 0 0020 12.5z"/>
-        `,
-
-        wakeup: `
-            <circle cx="12" cy="13" r="7"/>
-            <path d="M12 9v4l2 2"/>
-            <path d="M5 3L2 6"/>
-            <path d="M19 3l3 3"/>
-        `,
-
-        food: `
-            <path d="M6 2v10"/>
-            <path d="M10 2v10"/>
-            <path d="M6 6h4"/>
-            <path d="M16 2v18"/>
-        `,
-
-        drink: `
-            <path d="M7 2h10l-1 7a4 4 0 01-8 0z"/>
-            <path d="M9 22h6"/>
-        `,
-
-        home: `
-            <path d="M3 11l9-8 9 8"/>
-            <path d="M5 10v10h14V10"/>
-        `,
-
-        travel: `
-            <path d="M2 16l20-5"/>
-            <path d="M6 12l4 4"/>
-        `,
-
-        quran: `
-            <path d="M4 19a2 2 0 012-2h14"/>
-            <path d="M6 17V5a2 2 0 012-2h12v16"/>
-        `,
-
-        tasbeeh: `
-            <circle cx="12" cy="5" r="2"/>
-            <circle cx="12" cy="12" r="2"/>
-            <circle cx="12" cy="19" r="2"/>
-        `,
-
-        forgiveness: `
-            <path d="M12 2v4"/>
-            <path d="M12 22v-4"/>
-            <path d="M4.93 4.93l2.83 2.83"/>
-            <path d="M16.24 16.24l2.83 2.83"/>
-            <circle cx="12" cy="12" r="5"/>
-        `,
-
-        adhkar: `
-            <path d="M12 3l2.5 5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/>
-        `
-    };
-
-    if (name.includes('الصباح')) return icons.morning;
-    if (name.includes('المساء')) return icons.evening;
-    if (name.includes('الصلاة')) return icons.prayer;
-    if (name.includes('المسجد')) return icons.mosque;
-    if (name.includes('وضوء')) return icons.wudu;
-    if (name.includes('النوم')) return icons.sleep;
-    if (name.includes('الاستيقاظ')) return icons.wakeup;
-    if (name.includes('الطعام')) return icons.food;
-    if (name.includes('الشراب')) return icons.drink;
-    if (name.includes('المنزل')) return icons.home;
-    if (name.includes('السفر')) return icons.travel;
-    if (name.includes('القرآن')) return icons.quran;
-    if (name.includes('تسابيح') || name.includes('التسبيح')) return icons.tasbeeh;
-    if (name.includes('الاستغفار')) return icons.forgiveness;
-
-    return icons.adhkar;
-}
-
-        function init() {
-        function init() {
-    if (typeof dhikrData === 'undefined') {
-        document.getElementById('loading-msg').innerHTML = '❌ خطأ في تحميل dhikr-data.js';
-        return;
-    }
-    document.getElementById('loading-msg').style.display = 'none';
-    grid.innerHTML = '';
-    
-    Object.keys(dhikrData).forEach(category => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                ${getCategoryIcon(category)}
-            </svg>
-            <h3>${category}</h3>
-            <span>${dhikrData[category].length} ذكر</span>
-        `;
-        card.onclick = () => openCategory(category);
-        grid.appendChild(card);
-    });
-    if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
-
-    // 👇 🚀 كود التوجيه الذكي التلقائي الجديد 🚀 👇
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryParam = urlParams.get('category'); // سيقرأ الكلمة بعد كلمة category=
-    
-    if (categoryParam) {
-        // البحث في ملف dhikr-data.js عن فئة تطابق الكلمة المرسلة في الرابط
-        const matchedCategory = Object.keys(dhikrData).find(cat => {
-            if (categoryParam === 'morning' && cat.includes('الصباح')) return true;
-            if (categoryParam === 'evening' && cat.includes('المساء')) return true;
-            if (categoryParam === 'sleep' && cat.includes('النوم')) return true;
-            return cat === categoryParam; // هذا السطر يدعم إذا كتبت الاسم بالعربي مباشرة مثل category=أذكار الصباح
-        });
-
-        // إذا تم العثور على الفئة، يتم فتحها تلقائياً
-        if (matchedCategory) {
-            setTimeout(() => {
-                openCategory(matchedCategory);
-            }, 100); // تأخير بسيط جداً لضمان استقرار الواجهة قبل الفتح
+            return icons.adhkar;
         }
-    }
-}
+
+        function init() {
+            if (typeof dhikrData === 'undefined') {
+                document.getElementById('loading-msg').innerHTML = '❌ خطأ في تحميل dhikr-data.js';
+                return;
+            }
+            document.getElementById('loading-msg').style.display = 'none';
+            grid.innerHTML = '';
+            
+            Object.keys(dhikrData).forEach(category => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        ${getCategoryIcon(category)}
+                    </svg>
+                    <h3>${category}</h3>
+                    <span>${dhikrData[category].length} ذكر</span>
+                `;
+                card.onclick = () => openCategory(category);
+                grid.appendChild(card);
+            });
+            if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+            // 🚀 كود التوجيه الذكي التلقائي الجديد
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get('category');
+            
+            if (categoryParam) {
+                const matchedCategory = Object.keys(dhikrData).find(cat => {
+                    if (categoryParam === 'morning' && cat.includes('الصباح')) return true;
+                    if (categoryParam === 'evening' && cat.includes('المساء')) return true;
+                    if (categoryParam === 'sleep' && cat.includes('النوم')) return true;
+                    return cat === categoryParam;
+                });
+
+                if (matchedCategory) {
+                    setTimeout(() => {
+                        openCategory(matchedCategory);
+                    }, 150);
+                }
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            isDark ? document.body.removeAttribute('data-theme') : document.body.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
+
+        function openCategory(category) {
+            homePage.style.display = 'none'; dhikrPage.style.display = 'block';
+            pageTitle.innerText = category; renderDhikrList(category);
+            updateProgress(category); window.scrollTo(0,0);
+        }
+
         function renderDhikrList(category) {
             dhikrList.innerHTML = '';
             dhikrData[category].forEach((item, idx) => {
@@ -529,7 +473,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCs704ZMKYWKTVGkOMdUjYWHlmUsVNDY6U",
@@ -544,7 +488,6 @@
         const app = initializeApp(firebaseConfig);
         const messaging = getMessaging(app);
 
-        // فحص حالة الزر المخزنة وتحديث السويتش عند تشغيل التطبيق أول مرة
         function checkInitialToggleState() {
             const isEnabled = localStorage.getItem('firebase_notifications_enabled') === 'true';
             const toggle = document.getElementById('firebase-toggle');
@@ -553,59 +496,52 @@
             }
         }
 
-        // إدارة عمل السويتش تشغيل وإطفاء
         window.handleNotificationToggle = function(toggleElement) {
             if (toggleElement.checked) {
                 Notification.requestPermission().then((permission) => {
                     if (permission === 'granted') {
-                        
-navigator.serviceWorker.register('./sw.js')
-.then((registration) => {
+                        navigator.serviceWorker.register('./sw.js')
+                        .then((registration) => {
+                            console.log("Service Worker Registered:", registration);
+                            getToken(messaging, { 
+                                vapidKey: 'BDWhgllFA_C73QSG2VPzH9idpNeHgKh-XoABDwbp94TI-ZtwLGvdLNjft3O-0GseQwhenlURHx3M5z3YKia6Ikw',
+                                serviceWorkerRegistration: registration 
+                            })
+                            .then((currentToken) => {
+                                if (currentToken) {
+                                    console.log("Firebase Token:", currentToken);
+                                    localStorage.setItem('firebase_notifications_enabled', 'true');
+                                    alert("تم تفعيل إشعارات Firebase بنجاح 🎉");
+                                } else {
+                                    console.error("No registration token available");
+                                    toggleElement.checked = false;
+                                    alert("تعذر الحصول على التوكن.");
+                                }
+                            })
+                            .catch((err) => {
+                                console.error("Token Error:", err);
+                                toggleElement.checked = false;
+                                alert("حدث خطأ أثناء إنشاء Firebase Token.");
+                            });
+                        })
+                        .catch((err) => {
+                            console.error("Service Worker Error:", err);
+                            toggleElement.checked = false;
+                            alert("فشل تسجيل Service Worker.");
+                        });
+                    } else {
+                        toggleElement.checked = false;
+                        alert("لم يتم منح إذن الإشعارات.");
+                    }
+                });
+            } else {
+                localStorage.setItem('firebase_notifications_enabled', 'false');
+                alert("تم إيقاف استقبال الإشعارات.");
+            }
+        };
 
-    console.log("Service Worker Registered:", registration);
-
-    getToken(messaging, { 
-        vapidKey: 'BDWhgllFA_C73QSG2VPzH9idpNeHgKh-XoABDwbp94TI-ZtwLGvdLNjft3O-0GseQwhenlURHx3M5z3YKia6Ikw',
-        serviceWorkerRegistration: registration 
-    })
-    .then((currentToken) => {
-
-        if (currentToken) {
-
-            console.log("Firebase Token:", currentToken);
-
-            localStorage.setItem('firebase_notifications_enabled', 'true');
-
-            alert("تم تفعيل إشعارات Firebase بنجاح 🎉");
-
-        } else {
-
-            console.error("No registration token available");
-
-            toggleElement.checked = false;
-
-            alert("تعذر الحصول على التوكن.");
-
-        }
-
-    })
-    .catch((err) => {
-
-        console.error("Token Error:", err);
-
-        toggleElement.checked = false;
-
-        alert("حدث خطأ أثناء إنشاء Firebase Token.");
-
-    });
-
-})
-.catch((err) => {
-
-    console.error("Service Worker Error:", err);
-
-    toggleElement.checked = false;
-
-    alert("فشل تسجيل Service Worker.");
-
-});
+        // تشغيل فحص حالة السويتش عند التحميل
+        checkInitialToggleState();
+    </script>
+</body>
+</html>
