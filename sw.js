@@ -113,48 +113,23 @@ self.addEventListener('fetch', e => {
 // ==========================
 
 self.addEventListener('notificationclick', e => {
-
     e.notification.close();
 
     e.waitUntil(
-
         clients.matchAll({
             type: 'window',
             includeUncontrolled: true
         }).then(clientList => {
-
+            // إذا كان التطبيق مفتوحاً، قم بالتركيز عليه
             for (const client of clientList) {
-
                 if ('focus' in client) {
                     return client.focus();
                 }
-
             }
-
+            // إذا كان مغلقاً، افتحه
             if (clients.openWindow) {
                 return clients.openWindow('./');
             }
-
-        })
-
-    );
-
-});        });
-    })
-  );
-});
-
-// 4. معالجة الضغط على التنبيه (يعمل مع تنبيهات Firebase أيضاً)
-self.addEventListener('notificationclick', e => {
-    e.notification.close();
-    e.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
-            // إذا كان التطبيق مفتوحاً، قم بالتركيز عليه
-            for (const client of clientList) {
-                if ('focus' in client) return client.focus();
-            }
-            // إذا كان مغلقاً، افتحه
-            if (clients.openWindow) return clients.openWindow('./');
         })
     );
 });
