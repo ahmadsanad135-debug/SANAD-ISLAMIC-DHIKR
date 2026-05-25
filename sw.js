@@ -28,26 +28,30 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-
     console.log('Background Message:', payload);
 
-    // 🚀 جلب الرابط المخصص القادم من الإشعار التلقائي أو استخدام الرئيسي كافتراضي
+    // إذا كان الإشعار يحتوي على عنوان ونص من السيرفر، المتصفح سيعرضه تلقائياً
+    // لذلك نضع هذا الشرط: إذا كان العنوان والنص موجودين بالفعل، نتوقف هنا ولا نكرر الإشعار
+    if (payload.notification && payload.notification.title) {
+        return; 
+    }
+
+    // أما إذا كنت ترسل بيانات صامتة (Data-only message) وتريد تشكيل الإشعار يدوياً:
     const notificationUrl = payload.data?.url || './';
 
     self.registration.showNotification(
-        payload.notification?.title || 'إشعار جديد',
+        payload.data?.title || 'إشعار جديد',
         {
-            body: payload.notification?.body || '',
+            body: payload.data?.body || '',
             icon: './icon.png',
             badge: './icon.png',
             vibrate: [200, 100, 200],
             data: {
-                url: notificationUrl // حظّ الرابط المخصص هنا لكي يستلمه حدث الـ click
+                url: notificationUrl
             }
         }
     );
 });
-
 
 // ==========================
 // Install
