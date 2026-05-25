@@ -405,47 +405,50 @@
 }
 
         function init() {
-            if (typeof dhikrData === 'undefined') {
-                document.getElementById('loading-msg').innerHTML = '❌ خطأ في تحميل dhikr-data.js';
-                return;
-            }
-            document.getElementById('loading-msg').style.display = 'none';
-            grid.innerHTML = '';
-            
-            Object.keys(dhikrData).forEach(category => {
-                const card = document.createElement('div');
-                card.className = 'card';
-card.innerHTML = `
-    <svg class="card-icon"
-         viewBox="0 0 24 24"
-         fill="none"
-         stroke="currentColor"
-         stroke-width="2"
-         stroke-linecap="round"
-         stroke-linejoin="round">
-        ${getCategoryIcon(category)}
-    </svg>
+        function init() {
+    if (typeof dhikrData === 'undefined') {
+        document.getElementById('loading-msg').innerHTML = '❌ خطأ في تحميل dhikr-data.js';
+        return;
+    }
+    document.getElementById('loading-msg').style.display = 'none';
+    grid.innerHTML = '';
+    
+    Object.keys(dhikrData).forEach(category => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                ${getCategoryIcon(category)}
+            </svg>
+            <h3>${category}</h3>
+            <span>${dhikrData[category].length} ذكر</span>
+        `;
+        card.onclick = () => openCategory(category);
+        grid.appendChild(card);
+    });
+    if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
 
-    <h3>${category}</h3>
-    <span>${dhikrData[category].length} ذكر</span>
-`;                card.onclick = () => openCategory(category);
-                grid.appendChild(card);
-            });
-            if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
+    // 👇 🚀 كود التوجيه الذكي التلقائي الجديد 🚀 👇
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParam = urlParams.get('category'); // سيقرأ الكلمة بعد كلمة category=
+    
+    if (categoryParam) {
+        // البحث في ملف dhikr-data.js عن فئة تطابق الكلمة المرسلة في الرابط
+        const matchedCategory = Object.keys(dhikrData).find(cat => {
+            if (categoryParam === 'morning' && cat.includes('الصباح')) return true;
+            if (categoryParam === 'evening' && cat.includes('المساء')) return true;
+            if (categoryParam === 'sleep' && cat.includes('النوم')) return true;
+            return cat === categoryParam; // هذا السطر يدعم إذا كتبت الاسم بالعربي مباشرة مثل category=أذكار الصباح
+        });
+
+        // إذا تم العثور على الفئة، يتم فتحها تلقائياً
+        if (matchedCategory) {
+            setTimeout(() => {
+                openCategory(matchedCategory);
+            }, 100); // تأخير بسيط جداً لضمان استقرار الواجهة قبل الفتح
         }
-
-        function toggleTheme() {
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
-            isDark ? document.body.removeAttribute('data-theme') : document.body.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', isDark ? 'light' : 'dark');
-        }
-
-        function openCategory(category) {
-            homePage.style.display = 'none'; dhikrPage.style.display = 'block';
-            pageTitle.innerText = category; renderDhikrList(category);
-            updateProgress(category); window.scrollTo(0,0);
-        }
-
+    }
+}
         function renderDhikrList(category) {
             dhikrList.innerHTML = '';
             dhikrData[category].forEach((item, idx) => {
