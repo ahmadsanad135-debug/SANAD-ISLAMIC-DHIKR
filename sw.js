@@ -31,6 +31,9 @@ messaging.onBackgroundMessage((payload) => {
 
     console.log('Background Message:', payload);
 
+    // 🚀 جلب الرابط المخصص القادم من الإشعار التلقائي أو استخدام الرئيسي كافتراضي
+    const notificationUrl = payload.data?.url || './';
+
     self.registration.showNotification(
         payload.notification?.title || 'إشعار جديد',
         {
@@ -39,7 +42,7 @@ messaging.onBackgroundMessage((payload) => {
             badge: './icon.png',
             vibrate: [200, 100, 200],
             data: {
-                url: './'
+                url: notificationUrl // حظّ الرابط المخصص هنا لكي يستلمه حدث الـ click
             }
         }
     );
@@ -109,27 +112,34 @@ self.addEventListener('fetch', e => {
 
 
 // ==========================
-// Notification Click
+// Notification Click (تم تحديثه للتوجيه الذكي)
 // ==========================
 
 self.addEventListener('notificationclick', e => {
     e.notification.close();
+
+    // 🚀 استخراج الرابط المخصص المرفق مع الإشعار
+    const targetUrl = e.notification.data?.url || './';
 
     e.waitUntil(
         clients.matchAll({
             type: 'window',
             includeUncontrolled: true
         }).then(clientList => {
-            // إذا كان التطبيق مفتوحاً، قم بالتركيز عليه
+            
+            // إذا كان التطبيق مفتوحاً في الخلفية، وجّهه للرابط الجديد وقم بالتركيز عليه
             for (const client of clientList) {
-                if ('focus' in client) {
+                if ('focus' in client && 'navigate' in client) {
+                    client.navigate(targetUrl);
                     return client.focus();
                 }
             }
-            // إذا كان مغلقاً، افتحه
+            
+            // إذا كان التطبيق مغلقاً تماماً، افتحه مباشرة على صفحة الذكر المحددة
             if (clients.openWindow) {
-                return clients.openWindow('./');
+                return clients.openWindow(targetUrl);
             }
         })
     );
 });
+ 
