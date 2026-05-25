@@ -1,4 +1,4 @@
-const cacheName = 'azkar-v21-firebase';
+const cacheName = 'azkar-v22-firebase';
 
 const assets = [
   './',
