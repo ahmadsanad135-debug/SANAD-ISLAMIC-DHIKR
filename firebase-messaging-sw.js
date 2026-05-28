@@ -1,5 +1,5 @@
-importScripts('https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
     apiKey: "AIzaSyCs704ZMKYWKTVGkOMdUjYWHlmUsVNDY6U",
@@ -17,7 +17,11 @@ messaging.onBackgroundMessage((payload) => {
         payload.data?.title || "أذكار المسلم",
         {
             body: payload.data?.body || "",
-            icon: "./icon.png"
+            icon: "./icon.png",
+            badge: "./icon.png",
+            data: {
+                url: payload.data?.url || "./"
+            }
         }
     );
 });
