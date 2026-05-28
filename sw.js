@@ -8,28 +8,6 @@ const assets = [
   './icon.png'
 ];
 
-
-// ==========================
-// Firebase Messaging
-// ==========================
-
-importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
-
-firebase.initializeApp({
-    apiKey: "AIzaSyCs704ZMKYWKTVGkOMdUjYWHlmUsVNDY6U",
-    authDomain: "islamic-dhikr-230fa.firebaseapp.com",
-    projectId: "islamic-dhikr-230fa",
-    storageBucket: "islamic-dhikr-230fa.firebasestorage.app",
-    messagingSenderId: "525068923867",
-    appId: "1:525068923867:web:8157fbafc2f5f075adedfe"
-});
-
-const messaging = firebase.messaging();
-
-messaging.onBackgroundMessage((payload) => {
-    console.log('Background Message:', payload);
-
     // إذا كان الإشعار يحتوي على عنوان ونص من السيرفر، المتصفح سيعرضه تلقائياً
     // لذلك نضع هذا الشرط: إذا كان العنوان والنص موجودين بالفعل، نتوقف هنا ولا نكرر الإشعار
     if (payload.notification && payload.notification.title) {
