@@ -508,8 +508,7 @@
             if (toggleElement.checked) {
                 Notification.requestPermission().then((permission) => {
                     if (permission === 'granted') {
-                        navigator.serviceWorker.register('./sw.js')
-                        .then((registration) => {
+navigator.serviceWorker.register('./firebase-messaging-sw.js')                        .then((registration) => {
                             console.log("Service Worker Registered:", registration);
                             getToken(messaging, { 
                                 vapidKey: 'BDWhgllFA_C73QSG2VPzH9idpNeHgKh-XoABDwbp94TI-ZtwLGvdLNjft3O-0GseQwhenlURHx3M5z3YKia6Ikw',
