@@ -15,7 +15,11 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 
   event.waitUntil(
-    caches.open(cacheName).then((cache) => cache.addAll(assets))
+    caches.open(cacheName).then((cache) => {
+      return cache.addAll(assets).catch((error) => {
+        console.error('Cache addAll error:', error);
+      });
+    })
   );
 });
 
@@ -28,6 +32,7 @@ self.addEventListener('activate', (event) => {
       Promise.all(
         keys.map((key) => {
           if (key !== cacheName) {
+            console.log('Deleting old cache:', key);
             return caches.delete(key);
           }
         })
@@ -39,14 +44,22 @@ self.addEventListener('activate', (event) => {
 });
 
 // ==========================
-// Fetch (safe fallback)
+// Fetch (Safe fallback)
 // ==========================
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       return (
         cached ||
-        fetch(event.request).catch(() => caches.match('./index.html'))
+        fetch(event.request).catch(() => {
+          // Return cached index.html as fallback
+          return caches.match('./index.html');
+        })
       );
     })
   );
@@ -62,14 +75,18 @@ self.addEventListener('notificationclick', (event) => {
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientsArr) => {
+      // Check if there's already a window/tab with the target URL open
       for (const client of clientsArr) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
+        if (client.url && client.url.includes(self.location.origin) && 'focus' in client) {
           client.navigate(targetUrl);
           return client.focus();
         }
       }
 
-      return clients.openWindow(targetUrl);
+      // If not, open a new window
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
     })
   );
-}); 
+});
