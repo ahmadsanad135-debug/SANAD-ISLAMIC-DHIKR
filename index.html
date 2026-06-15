@@ -238,9 +238,9 @@
     <header>
         <h1>أذكار المسلم</h1>
         <div class="header-buttons">
-            <button class="theme-btn" onclick="toggleSettings()" aria-label="الإعدادات">🔔</button>
+            <button class="theme-btn" onclick="toggleSettings()" aria-label="الإعدادات">⚙️</button>
             <button class="theme-btn" onclick="toggleTheme()" aria-label="تغيير المظهر">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82 0.89-3.43 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
             </button>
         </div>
     </header>
@@ -361,7 +361,7 @@
             });
             if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
 
-            // 🚀 كود التوجيه الذكي التلقائي الجديد
+            // Smart URL Navigation
             const urlParams = new URLSearchParams(window.location.search);
             const categoryParam = urlParams.get('category');
             
@@ -388,9 +388,12 @@
         }
 
         function openCategory(category) {
-            homePage.style.display = 'none'; dhikrPage.style.display = 'block';
-            pageTitle.innerText = category; renderDhikrList(category);
-            updateProgress(category); window.scrollTo(0,0);
+            homePage.style.display = 'none';
+            dhikrPage.style.display = 'block';
+            pageTitle.innerText = category;
+            renderDhikrList(category);
+            updateProgress(category);
+            window.scrollTo(0, 0);
         }
 
         function renderDhikrList(category) {
@@ -436,18 +439,38 @@
             }
         }
 
-        function getSavedCount(cat, idx) { return parseInt(localStorage.getItem(`dhikr-${cat}-${idx}`)) || 0; }
-        function saveCount(cat, idx, val) { localStorage.setItem(`dhikr-${cat}-${idx}`, val); }
+        function getSavedCount(cat, idx) {
+            try {
+                return parseInt(localStorage.getItem(`dhikr-${cat}-${idx}`)) || 0;
+            } catch (e) {
+                console.error('Error reading localStorage:', e);
+                return 0;
+            }
+        }
+
+        function saveCount(cat, idx, val) {
+            try {
+                localStorage.setItem(`dhikr-${cat}-${idx}`, val);
+            } catch (e) {
+                console.error('Error writing to localStorage:', e);
+            }
+        }
 
         function updateProgress(category) {
             const total = dhikrData[category].length;
             let done = 0;
-            dhikrData[category].forEach((_, idx) => { if(getSavedCount(category, idx) >= dhikrData[category][idx].count) done++; });
+            dhikrData[category].forEach((_, idx) => {
+                if(getSavedCount(category, idx) >= dhikrData[category][idx].count) done++;
+            });
             const percent = Math.round((done / total) * 100);
-            progressFill.style.width = `${percent}%`; progressText.innerText = `${percent}%`;
+            progressFill.style.width = `${percent}%`;
+            progressText.innerText = `${percent}%`;
         }
 
-        function showHome() { homePage.style.display = 'block'; dhikrPage.style.display = 'none'; }
+        function showHome() {
+            homePage.style.display = 'block';
+            dhikrPage.style.display = 'none';
+        }
 
         function toggleSettings() {
             const panel = document.getElementById('reminders-setup');
@@ -456,7 +479,9 @@
         }
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
         });
 
         async function installApp() {
@@ -475,67 +500,85 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCsF_k_WR9ScrBC1Nq3hWboiWVm4KEigNM",
-  authDomain: "islamic-dhikr.firebaseapp.com",
-  projectId: "islamic-dhikr",
-  storageBucket: "islamic-dhikr.firebasestorage.app",
-  messagingSenderId: "335914729881",
-  appId: "1:335914729881:web:ab4f5e4c8added6fc65308",
-  measurementId: "G-M3GKFFF5YR"
-};
+        // تحميل متغيرات البيئة من .env
+        const firebaseConfig = {
+            apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCsF_k_WR9ScrBC1Nq3hWboiWVm4KEigNM",
+            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "islamic-dhikr.firebaseapp.com",
+            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "islamic-dhikr",
+            storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "islamic-dhikr.firebasestorage.app",
+            messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "335914729881",
+            appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:335914729881:web:ab4f5e4c8added6fc65308",
+            measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-M3GKFFF5YR"
+        };
 
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
+        const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY || "BGVg3N1OvvzczIpOj4NuyGPtCqm-gVdNYd1U-ZIM1-DNmu6BWYHcXulbwsxQyq7kB6rVJaPbKxCSRLq1n8RUaS0";
+
+        let app = null;
+        let messaging = null;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            messaging = getMessaging(app);
+            console.log("✅ Firebase initialized successfully");
+        } catch (error) {
+            console.error("❌ Firebase initialization error:", error);
+        }
 
         function checkInitialToggleState() {
-    const isEnabled = localStorage.getItem('firebase_notifications_enabled') === 'true';
-    const toggle = document.getElementById('firebase-toggle');
-    
-    if (toggle) {
-        // التحقق من إذن المتصفح الفعلي والتفعيل معاً
-        if (Notification.permission === 'granted' && isEnabled) {
-            toggle.checked = true;
-        } else {
-            // إذا كان الإذن ملغى في المتصفح، يتم إطفاء الزر تلقائياً
-            toggle.checked = false;
-            localStorage.setItem('firebase_notifications_enabled', 'false');
+            const isEnabled = localStorage.getItem('firebase_notifications_enabled') === 'true';
+            const toggle = document.getElementById('firebase-toggle');
+            
+            if (toggle) {
+                if (Notification.permission === 'granted' && isEnabled) {
+                    toggle.checked = true;
+                } else {
+                    toggle.checked = false;
+                    localStorage.setItem('firebase_notifications_enabled', 'false');
+                }
+            }
         }
-    }
-}
 
         window.handleNotificationToggle = function(toggleElement) {
             if (toggleElement.checked) {
+                if (!messaging) {
+                    console.error("❌ Firebase messaging not initialized");
+                    toggleElement.checked = false;
+                    alert("خطأ: لم يتم تهيئة Firebase بشكل صحيح.");
+                    return;
+                }
+
                 Notification.requestPermission().then((permission) => {
                     if (permission === 'granted') {
-navigator.serviceWorker.register('./firebase-messaging-sw.js')                        .then((registration) => {
-                            console.log("Service Worker Registered:", registration);
-                            getToken(messaging, { 
-                                vapidKey: 'BGVg3N1OvvzczIpOj4NuyGPtCqm-gVdNYd1U-ZIM1-DNmu6BWYHcXulbwsxQyq7kB6rVJaPbKxCSRLq1n8RUaS0', 
-                                serviceWorkerRegistration: registration 
-                            })
-                            .then((currentToken) => {
-                                if (currentToken) {
-                                    console.log("Firebase Token:", currentToken);
-                                    localStorage.setItem('firebase_notifications_enabled', 'true');
-                                    alert("تم تفعيل إشعارات Firebase بنجاح 🎉");
-                                } else {
-                                    console.error("No registration token available");
+                        navigator.serviceWorker.register('./firebase-messaging-sw.js')
+                            .then((registration) => {
+                                console.log("✅ Service Worker Registered:", registration);
+                                getToken(messaging, { 
+                                    vapidKey: vapidKey, 
+                                    serviceWorkerRegistration: registration 
+                                })
+                                .then((currentToken) => {
+                                    if (currentToken) {
+                                        console.log("✅ Firebase Token obtained successfully");
+                                        localStorage.setItem('firebase_notifications_enabled', 'true');
+                                        localStorage.setItem('firebase_token', currentToken);
+                                        alert("تم تفعيل إشعارات Firebase بنجاح 🎉");
+                                    } else {
+                                        console.error("❌ No registration token available");
+                                        toggleElement.checked = false;
+                                        alert("تعذر الحصول على التوكن.");
+                                    }
+                                })
+                                .catch((err) => {
+                                    console.error("❌ Token Error:", err);
                                     toggleElement.checked = false;
-                                    alert("تعذر الحصول على التوكن.");
-                                }
+                                    alert("حدث خطأ أثناء إنشاء Firebase Token: " + err.message);
+                                });
                             })
                             .catch((err) => {
-                                console.error("Token Error:", err);
+                                console.error("❌ Service Worker Error:", err);
                                 toggleElement.checked = false;
-                                alert("حدث خطأ أثناء إنشاء Firebase Token.");
+                                alert("فشل تسجيل Service Worker. تأكد من استخدام HTTPS.");
                             });
-                        })
-                        .catch((err) => {
-                            console.error("Service Worker Error:", err);
-                            toggleElement.checked = false;
-                            alert("فشل تسجيل Service Worker.");
-                        });
                     } else {
                         toggleElement.checked = false;
                         alert("لم يتم منح إذن الإشعارات.");
@@ -543,11 +586,11 @@ navigator.serviceWorker.register('./firebase-messaging-sw.js')                  
                 });
             } else {
                 localStorage.setItem('firebase_notifications_enabled', 'false');
+                localStorage.removeItem('firebase_token');
                 alert("تم إيقاف استقبال الإشعارات.");
             }
         };
 
-        // تشغيل فحص حالة السويتش عند التحميل
         checkInitialToggleState();
     </script>
 </body>
