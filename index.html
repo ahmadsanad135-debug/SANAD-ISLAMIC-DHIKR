@@ -475,15 +475,15 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCs704ZMKYWKTVGkOMdUjYWHlmUsVNDY6U",
-            authDomain: "islamic-dhikr-230fa.firebaseapp.com",
-            projectId: "islamic-dhikr-230fa",
-            storageBucket: "islamic-dhikr-230fa.firebasestorage.app",
-            messagingSenderId: "525068923867",
-            appId: "1:525068923867:web:8157fbafc2f5f075adedfe",
-            measurementId: "G-0YHF9FJYM7"
-        };
+const firebaseConfig = {
+  apiKey: "AIzaSyCsF_k_WR9ScrBC1Nq3hWboiWVm4KEigNM",
+  authDomain: "islamic-dhikr.firebaseapp.com",
+  projectId: "islamic-dhikr",
+  storageBucket: "islamic-dhikr.firebasestorage.app",
+  messagingSenderId: "335914729881",
+  appId: "1:335914729881:web:ab4f5e4c8added6fc65308",
+  measurementId: "G-M3GKFFF5YR"
+};
 
         const app = initializeApp(firebaseConfig);
         const messaging = getMessaging(app);
@@ -511,7 +511,7 @@
 navigator.serviceWorker.register('./firebase-messaging-sw.js')                        .then((registration) => {
                             console.log("Service Worker Registered:", registration);
                             getToken(messaging, { 
-                                vapidKey: 'BDWhgllFA_C73QSG2VPzH9idpNeHgKh-XoABDwbp94TI-ZtwLGvdLNjft3O-0GseQwhenlURHx3M5z3YKia6Ikw',
+                                vapidKey: 'BGVg3N1OvvzczIpOj4NuyGPtCqm-gVdNYd1U-ZIM1-DNmu6BWYHcXulbwsxQyq7kB6rVJaPbKxCSRLq1n8RUaS0', 
                                 serviceWorkerRegistration: registration 
                             })
                             .then((currentToken) => {
