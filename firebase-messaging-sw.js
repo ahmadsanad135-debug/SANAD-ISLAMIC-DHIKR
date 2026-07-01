@@ -1,73 +1,43 @@
-// Firebase Messaging Service Worker
-// يتعامل مع الإشعارات في الخلفية
+// firebase-messaging-sw.js
+// Service Worker for handling Firebase Cloud Messaging background messages
+// IMPORTANT: Replace the firebase config values below with your project's values.
 
-importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js');
 
-// Firebase Configuration
-try {
-  firebase.initializeApp({
-    apiKey: "AIzaSyCsF_k_WR9ScrBC1Nq3hWboiWVm4KEigNM",
-    authDomain: "islamic-dhikr.firebaseapp.com",
-    projectId: "islamic-dhikr",
-    storageBucket: "islamic-dhikr.firebasestorage.app",
-    messagingSenderId: "335914729881",
-    appId: "1:335914729881:web:ab4f5e4c8added6fc65308"
-  });
+firebase.initializeApp({
+  apiKey: "<YOUR_API_KEY>",
+  authDomain: "<YOUR_AUTH_DOMAIN>",
+  projectId: "<YOUR_PROJECT_ID>",
+  messagingSenderId: "<YOUR_SENDER_ID>",
+  appId: "<YOUR_APP_ID>"
+});
 
-  const messaging = firebase.messaging();
+const messaging = firebase.messaging();
 
-  /**
-   * إشعارات الخلفية (عند إغلاق التطبيق)
-   */
-  messaging.onBackgroundMessage((payload) => {
-    console.log('Background message received:', payload);
-    
-    const title =
-      payload.notification?.title ||
-      payload.data?.title ||
-      "أذكار المسلم";
+// Handle background messages. Show the notification here once per incoming message.
+messaging.onBackgroundMessage(function(payload) {
+  try {
+    const data = payload.notification || payload.data || {};
+    const title = data.title || 'تنبيه';
+    const options = {
+      body: data.body || data.message || '',
+      icon: data.icon || '/favicon.ico',
+      data: data
+    };
+    self.registration.showNotification(title, options);
+  } catch (e) {
+    console.error('sw background message error', e);
+  }
+});
 
-    const body =
-      payload.notification?.body ||
-      payload.data?.body ||
-      "لديك تنبيه جديد";
-
-    const url = payload.data?.url || "./";
-
-    self.registration.showNotification(title, {
-      body: body,
-      icon: "./icon.png",
-      badge: "./icon.png",
-      tag: 'dhikr-notification',
-      data: { url }
-    });
-  });
-
-  console.log('✅ Firebase Messaging Service Worker initialized successfully');
-} catch (error) {
-  console.error('❌ Firebase Messaging SW initialization error:', error);
-}
-
-/**
- * عند الضغط على الإشعار
- */
-self.addEventListener("notificationclick", (event) => {
+self.addEventListener('notificationclick', function(event) {
   event.notification.close();
-
-  const url = event.notification.data?.url || "./";
-
-  event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
-      // البحث عن نافذة مفتوحة
-      for (const client of clientList) {
-        if (client.url && client.url.includes(self.location.origin) && "focus" in client) {
-          client.navigate(url);
-          return client.focus();
-        }
-      }
-      // فتح نافذة جديدة إذا لم توجد نافذة مفتوحة
-      return clients.openWindow(url);
-    })
-  );
+  const url = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(clients.matchAll({ type: 'window' }).then(windowClients => {
+    for (let client of windowClients) {
+      if (client.url === url && 'focus' in client) return client.focus();
+    }
+    if (clients.openWindow) return clients.openWindow(url);
+  }));
 });
