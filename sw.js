@@ -1,4 +1,4 @@
-const cacheName = 'azkar-v24-firebase';
+const cacheName = 'azkar-v25-firebase';
 
 const assets = [
   './',
@@ -47,7 +47,6 @@ self.addEventListener('activate', (event) => {
 // Fetch (Safe fallback)
 // ==========================
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
   if (event.request.method !== 'GET') {
     return;
   }
@@ -57,7 +56,6 @@ self.addEventListener('fetch', (event) => {
       return (
         cached ||
         fetch(event.request).catch(() => {
-          // Return cached index.html as fallback
           return caches.match('./index.html');
         })
       );
@@ -66,7 +64,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 // ==========================
-// Notification Click (FIXED)
+// Notification Click
 // ==========================
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
@@ -75,7 +73,6 @@ self.addEventListener('notificationclick', (event) => {
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientsArr) => {
-      // Check if there's already a window/tab with the target URL open
       for (const client of clientsArr) {
         if (client.url && client.url.includes(self.location.origin) && 'focus' in client) {
           client.navigate(targetUrl);
@@ -83,10 +80,40 @@ self.addEventListener('notificationclick', (event) => {
         }
       }
 
-      // If not, open a new window
       if (clients.openWindow) {
         return clients.openWindow(targetUrl);
       }
     })
   );
+});
+
+// ==========================
+// High Priority Push Fallback
+// كود احتياطي في حال توجيه إشعار Firebase لهذا الملف بدلاً من firebase-messaging-sw.js
+// ==========================
+self.addEventListener('push', (event) => {
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      const title = payload.notification?.title || payload.data?.title || "أذكار المسلم";
+      const body = payload.notification?.body || payload.data?.body || "لديك تنبيه جديد";
+      const url = payload.data?.url || "./";
+
+      event.waitUntil(
+        self.registration.showNotification(title, {
+          body: body,
+          icon: "./icon.png",
+          badge: "./icon.png",
+          tag: 'dhikr-push-' + Date.now(),
+          data: { url: url },
+          requireInteraction: true,
+          priority: 'high',
+          urgency: 'high',
+          vibrate: [200, 100, 200]
+        })
+      );
+    } catch (e) {
+      console.error('Error handling push event in sw.js:', e);
+    }
+  }
 });
