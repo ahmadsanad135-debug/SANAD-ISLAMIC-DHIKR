@@ -1,5 +1,5 @@
 // Firebase Messaging Service Worker
-// يتعامل مع الإشعارات في الخلفية
+// يتعامل مع الإشعارات في الخلفية بأولوية عالية إجبارية
 
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
@@ -18,7 +18,7 @@ try {
   const messaging = firebase.messaging();
 
   /**
-   * إشعارات الخلفية (عند إغلاق التطبيق)
+   * إشعارات الخلفية (عند إغلاق التطبيق) - معالجة فورية إجبارية
    */
   messaging.onBackgroundMessage((payload) => {
     console.log('Background message received:', payload);
@@ -35,13 +35,20 @@ try {
 
     const url = payload.data?.url || "./";
 
-    self.registration.showNotification(title, {
+    // خيارات إشعار عالية الأولوية تجبر المتصفح والنظام على العرض الفوري
+    const notificationOptions = {
       body: body,
       icon: "./icon.png",
       badge: "./icon.png",
-      tag: 'dhikr-notification',
-      data: { url }
-    });
+      tag: 'dhikr-notification-' + Date.now(), // Tag فريد لمنع التأخير أو دمج الإشعارات
+      data: { url },
+      requireInteraction: true, // يمنع اختفاء الإشعار تلقائياً ويجبر النظام على إظهاره فوراً
+      priority: 'high',         // أولوية قصوى للنظام
+      urgency: 'high',          // استعجال فوري لشبكة Web Push
+      vibrate: [200, 100, 200]  // اهتزاز عند الوصول
+    };
+
+    self.registration.showNotification(title, notificationOptions);
   });
 
   console.log('✅ Firebase Messaging Service Worker initialized successfully');
