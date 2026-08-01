@@ -278,6 +278,15 @@
     <script src="./dhikr-data.js"></script>
 
     <script>
+        // تسجيل Service Worker الرئيسي للـ PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('✅ PWA Main SW registered:', reg.scope))
+                    .catch(err => console.error('❌ PWA Main SW register error:', err));
+            });
+        }
+
         const grid = document.getElementById('categories-grid');
         const dhikrPage = document.getElementById('dhikr-page');
         const homePage = document.getElementById('home-page');
@@ -500,7 +509,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
-        // تحميل متغيرات البيئة من .env
         const firebaseConfig = {
             apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCsF_k_WR9ScrBC1Nq3hWboiWVm4KEigNM",
             authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "islamic-dhikr.firebaseapp.com",
@@ -551,7 +559,7 @@
                     if (permission === 'granted') {
                         navigator.serviceWorker.register('./firebase-messaging-sw.js')
                             .then((registration) => {
-                                console.log("✅ Service Worker Registered:", registration);
+                                console.log("✅ Firebase SW Registered:", registration);
                                 getToken(messaging, { 
                                     vapidKey: vapidKey, 
                                     serviceWorkerRegistration: registration 
@@ -561,7 +569,7 @@
                                         console.log("✅ Firebase Token obtained successfully");
                                         localStorage.setItem('firebase_notifications_enabled', 'true');
                                         localStorage.setItem('firebase_token', currentToken);
-                                        alert("تم تفعيل إشعارات Firebase بنجاح 🎉");
+                                        alert("تم تفعيل إشعارات الأذكار بنجاح 🎉");
                                     } else {
                                         console.error("❌ No registration token available");
                                         toggleElement.checked = false;
@@ -571,13 +579,13 @@
                                 .catch((err) => {
                                     console.error("❌ Token Error:", err);
                                     toggleElement.checked = false;
-                                    alert("حدث خطأ أثناء إنشاء Firebase Token: " + err.message);
+                                    alert("حدث خطأ أثناء إنشاء التوكن: " + err.message);
                                 });
                             })
                             .catch((err) => {
                                 console.error("❌ Service Worker Error:", err);
                                 toggleElement.checked = false;
-                                alert("فشل تسجيل Service Worker. تأكد من استخدام HTTPS.");
+                                alert("فشل تسجيل Service Worker.");
                             });
                     } else {
                         toggleElement.checked = false;
@@ -595,3 +603,4 @@
     </script>
 </body>
 </html>
+
