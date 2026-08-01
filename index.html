@@ -532,13 +532,24 @@
             console.error("❌ Firebase initialization error:", error);
         }
 
-        function checkInitialToggleState() {
+        // فحص حالة الزر وإعادة تفعيل SW التلقائي عند الـ Refresh أو الخروج والعودة
+        async function checkInitialToggleState() {
             const isEnabled = localStorage.getItem('firebase_notifications_enabled') === 'true';
             const toggle = document.getElementById('firebase-toggle');
             
             if (toggle) {
                 if (Notification.permission === 'granted' && isEnabled) {
                     toggle.checked = true;
+                    
+                    // إعادة تسجل/تفعيل الـ Service Worker في الخلفية لضمان عمله دائماً
+                    if ('serviceWorker' in navigator && messaging) {
+                        try {
+                            const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+                            console.log("✅ Firebase SW Auto-Re-registered in Background:", registration.scope);
+                        } catch (err) {
+                            console.error("❌ SW Re-registration failed:", err);
+                        }
+                    }
                 } else {
                     toggle.checked = false;
                     localStorage.setItem('firebase_notifications_enabled', 'false');
